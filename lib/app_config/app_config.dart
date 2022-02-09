@@ -13,7 +13,7 @@ class AppConfig {
 
   static final String apiUrl = 'http://dev.eyad-web-development.com/api/';
 
-  static final String profilePicturesUrl = 'https://admin.linkincard.com/storage/users/';
+  static final String profilePicturesUrl = 'http://dev.eyad-web-development.com/storage/users/';
 
-  static final String postsPicturesUrl = 'https://admin.linkincard.com/storage/posts/';
+  static final String postsPicturesUrl = 'http://dev.eyad-web-development.com/storage/posts/';
 }

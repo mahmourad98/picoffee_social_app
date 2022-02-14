@@ -7,24 +7,29 @@ class EntryField extends StatelessWidget {
   final String? initialValue;
   final bool? enabled;
   final bool obscureText;
+  //  final InputBorder? border,
 
-
-  EntryField({this.controller, this.hint, this.prefix, this.initialValue,this.enabled,this.obscureText=false});
+  EntryField({
+    this.controller,
+    this.hint,
+    this.prefix,
+    this.initialValue,
+    this.enabled,
+    this.obscureText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return TextFormField(
- obscureText: obscureText,
-      obscuringCharacter:'*',
+      obscureText: obscureText,
+      obscuringCharacter: '*',
       enabled: enabled,
       controller: controller,
       initialValue: initialValue,
       decoration: InputDecoration(
-
         hintText: hint,
-
-        suffixIcon:prefix ,
+        suffixIcon: prefix,
         hintStyle: theme.textTheme.bodyText2!
             .copyWith(color: theme.hintColor, fontSize: 15),
       ),

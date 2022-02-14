@@ -12,11 +12,14 @@ class User with ChangeNotifier {
   String? email;
   String? password;
   String? devicename;
-  String gender= '';
+  String gender = '';
   var fcmtoken;
 
-  signUp(name, email, password,) async {
-
+  signUp(
+    name,
+    email,
+    password,
+  ) async {
     var url = api.ApiUrl + "users/store";
 
     var response = await http.post(Uri.parse(url), body: {
@@ -28,22 +31,20 @@ class User with ChangeNotifier {
       'fcm_token': fcmtoken.toString()
     });
 
-    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
+    Map<String, dynamic> data =
+        new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-
-    prefs.setString('name',data['user']['name']);
-    prefs.setString('email',data['user']['email']);
-    prefs.setString('token',data['token']);
+    prefs.setString('name', data['user']['name']);
+    prefs.setString('email', data['user']['email']);
+    prefs.setString('token', data['token']);
     prefs.setBool('logged_in', true);
 
     notifyListeners();
   }
 
-
   signIn(email, password) async {
-
     var url = api.ApiUrl + "users/login";
 
     var response = await http.post(Uri.parse(url), body: {
@@ -52,14 +53,14 @@ class User with ChangeNotifier {
       'device_name': devicename,
     });
 
-    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
-
+    Map<String, dynamic> data =
+        new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.setString('name',data['user']['name']);
-    prefs.setString('email',data['user']['email']);
-    prefs.setString('token',data['token']);
+    prefs.setString('name', data['user']['name']);
+    prefs.setString('email', data['user']['email']);
+    prefs.setString('token', data['token']);
     prefs.setBool('logged_in', true);
 
     notifyListeners();

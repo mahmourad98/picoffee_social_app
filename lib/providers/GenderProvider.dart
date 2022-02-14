@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Gender with ChangeNotifier {
-  bool _isMale = true;
+  int _isMale = -1;
 
-  bool get isMale => this._isMale;
+  int get isMale => this._isMale;
 
-  set isMale(bool value) {
+  set isMale(int value) {
     this._isMale = value;
     notifyListeners();
   }
-
 }

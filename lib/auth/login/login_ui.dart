@@ -17,7 +17,7 @@ class _LoginUiState extends State<LoginUi> {
   TextEditingController emailC = TextEditingController();
   TextEditingController passwordC = TextEditingController();
   bool passwordVisible = true;
-
+  bool clicked = false;
   void initState() {
     getPlatform();
     super.initState();
@@ -59,13 +59,30 @@ class _LoginUiState extends State<LoginUi> {
                 ),
               ),
               SizedBox(height: 40),
-              CustomButton(
-                  label: 'Sign in',
-                  onTap: () async {
-                    await Login();
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  }),
+              (clicked == false)
+                  ? CustomButton(
+                      label: 'Sign in',
+                      onTap: () async {
+                        if (emailC.text.isEmpty || passwordC.text.isEmpty) {
+                          BotToast.showSimpleNotification(
+                              title: 'enter email and password ',
+                              duration: Duration(seconds: 3));
+                        } else {
+                          setState(() {
+                            clicked = true;
+                          });
+                          await Provider.of<User>(context, listen: false)
+                              .signIn(emailC, passwordC);
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
+                        }
+                      })
+                  : Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      ),
+                    ),
               Spacer(),
               Text('Or Continue with',
                   style: theme.textTheme.headline6!.copyWith(fontSize: 14)),
@@ -86,15 +103,6 @@ class _LoginUiState extends State<LoginUi> {
         ),
       ),
     );
-  }
-
-  Login() async {
-    if (emailC.text.isEmpty || passwordC.text.isEmpty) {
-      BotToast.showSimpleNotification(
-          title: 'enter email and password ', duration: Duration(seconds: 3));
-    } else {
-      await Provider.of<User>(context, listen: false).signIn(emailC, passwordC);
-    }
   }
 
   getPlatform() {

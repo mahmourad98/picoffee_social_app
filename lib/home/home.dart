@@ -1,6 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verbose_share_world/app_config/app_config.dart';
 import 'package:verbose_share_world/comments/comments.dart';
 import 'package:verbose_share_world/app_theme/application_colors.dart';
@@ -8,7 +9,7 @@ import 'package:verbose_share_world/post/text_post.dart';
 import 'package:verbose_share_world/profile/edit_profile.dart';
 import 'package:verbose_share_world/profile/my_profile_screen.dart';
 import 'package:verbose_share_world/profile/user_profile.dart';
-
+import 'package:verbose_share_world/topTweets/topTweets.dart';
 
 class FollowingItems {
   String image;
@@ -23,7 +24,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _currentIndex = 0;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -73,10 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final mediaQuery = MediaQuery.of(context);
 
-    final bHeight = mediaQuery.size.height - mediaQuery.padding.top - AppBar().preferredSize.height;
+    final bHeight = mediaQuery.size.height -
+        mediaQuery.padding.top -
+        AppBar().preferredSize.height;
 
     final theme = Theme.of(context);
 
@@ -114,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: CircleAvatar(
                               radius: 35,
                               backgroundImage:
-                              AssetImage('assets/images/Layer1677.png'),
+                                  AssetImage('assets/images/Layer1677.png'),
                             ),
                           ),
                         ),
@@ -178,27 +179,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   AlertDialog(
                                     title: Text(
                                       'Select Language',
-                                      style: theme.textTheme.headline6!.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
+                                      style: theme.textTheme.headline6!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
                                     ),
                                     content: Container(
                                       width: 300,
                                       child: ListView.builder(
                                           physics: BouncingScrollPhysics(),
-                                          itemCount:
-                                          AppConfig.languagesSupported.length,
+                                          itemCount: AppConfig
+                                              .languagesSupported.length,
                                           shrinkWrap: true,
                                           itemBuilder: (context, index) =>
                                               TextButton(
-                                                onPressed: () {
-
-                                                },
-                                                child: Text(
-                                                    AppConfig.languagesSupported[
+                                                onPressed: () {},
+                                                child: Text(AppConfig
+                                                        .languagesSupported[
                                                     AppConfig
-                                                        .languagesSupported
-                                                        .keys
+                                                        .languagesSupported.keys
                                                         .elementAt(index)]!),
                                               )),
                                     ),
@@ -229,7 +228,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(height: 30),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async{
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.clear();
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopTweetsScreen()));
                           },
                           child: Container(
                             width: double.infinity,
@@ -294,14 +296,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               contentPadding: EdgeInsets.all(0),
                               leading: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              UserProfileScreen()));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => UserProfileScreen()));
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage: AssetImage(
-                                      _followingItems[index].image),
+                                  backgroundImage:
+                                      AssetImage(_followingItems[index].image),
                                 ),
                               ),
                               title: Text(
@@ -318,20 +318,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => CommentScreen()));
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CommentScreen(comm: [],indexuserTweet: 0,),
+                                  ),
+                                );
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
                                 child:
-                                Image.asset(_followingItems[index].image),
+                                    Image.asset(_followingItems[index].image),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   Row(
                                     children: [
@@ -420,10 +423,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => TextPostScreen())
-          );
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => TextPostScreen()));
         },
       ),
     );

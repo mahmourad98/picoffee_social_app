@@ -2,10 +2,16 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:verbose_share_world/app_theme/application_colors.dart';
-
+import 'package:verbose_share_world/providers/TopTweetProvider.dart';
 
 class CommentScreen extends StatefulWidget {
+  List comm = [];
+  int indexuserTweet;
+
+  CommentScreen({required this.comm, required this.indexuserTweet});
+
   @override
   _CommentScreenState createState() => _CommentScreenState();
 }
@@ -62,7 +68,8 @@ class _CommentScreenState extends State<CommentScreen> {
                   FadedSlideAnimation(
                     Container(
                       height: (bHeight - 60) * 0.6,
-                      color: Color.fromRGBO(27, 77, 42, 1),
+                      // color: Color.fromRGBO(27, 77, 42, 1),
+                      color: Colors.white,
                       // decoration: BoxDecoration(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,63 +114,24 @@ class _CommentScreenState extends State<CommentScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text('Full Name', overflow: TextOverflow.ellipsis,),
-                                              Text('Today 10:00 pm',
-                                                  style: theme
-                                                      .textTheme.bodyText1!
-                                                      .copyWith(
-                                                          color: Colors.grey,
-                                                          fontSize: 11),
+                                              Text(
+                                                '  ${Provider.of<TopTweets>(context, listen: true).topTweets[widget.indexuserTweet]['user']['name']}',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                '  ${Provider.of<TopTweets>(context, listen: true).topTweets[widget.indexuserTweet]['created_at_string']}',
+                                                style: theme
+                                                    .textTheme.bodyText1!
+                                                    .copyWith(
+                                                        color: Colors.grey,
+                                                        fontSize: 11),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
                                         ),
                                         Spacer(),
-                                        Image.asset(
-                                          'assets/Icons/ic_share.png',
-                                          scale: 3,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Icon(
-                                          Icons.bookmark_outline,
-                                          size: 17,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(width: 10),
-                                        FaIcon(
-                                          Icons.repeat_rounded,
-                                          size: 17,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Icon(
-                                          Icons.favorite_border,
-                                          size: 17,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          '8.2k',
-                                          style: theme.textTheme.bodyText1!
-                                              .copyWith(
-                                                  color: Colors.grey,
-                                                  letterSpacing: 1),
-                                        ),
-                                        SizedBox(width: 10),
                                       ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(10, 10, 0, 9),
-                                    child: Text(
-                                      'Finding myself !!',
-                                      textAlign: TextAlign.left,
-                                      style: theme.textTheme.headline6!
-                                          .copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18),
                                     ),
                                   ),
                                 ],
@@ -174,7 +142,7 @@ class _CommentScreenState extends State<CommentScreen> {
                             // height: constraints.maxHeight * 0.7,
                             // color: Colors.white,
                             child: ListView.builder(
-                              itemCount: _comments.length,
+                              itemCount: widget.comm.length,
                               itemBuilder: (context, index) {
                                 return Container(
                                   color: Colors.white,
@@ -189,13 +157,14 @@ class _CommentScreenState extends State<CommentScreen> {
                                             .copyWith(fontSize: 17),
                                         children: [
                                           TextSpan(
-                                            text: _comments[index].name,
+                                            text:
+                                                '${widget.comm[index]['user']['name']}',
                                             style: theme.textTheme.headline6!
                                                 .copyWith(fontSize: 14),
                                           ),
                                           TextSpan(
                                               text: '   ' +
-                                                 "Today 5:00 am",
+                                                  '${widget.comm[index]['created_at_string']}',
                                               style: TextStyle(
                                                   fontSize: 10,
                                                   color: Colors.grey)),
@@ -203,13 +172,12 @@ class _CommentScreenState extends State<CommentScreen> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Wow. Looks stunning :)',
+                                      '${widget.comm[index]['body']}',
                                       style:
                                           theme.textTheme.subtitle2!.copyWith(
                                         fontSize: 12,
                                       ),
                                     ),
-                                    trailing: Icon(Icons.favorite_border),
                                   ),
                                 );
                               },

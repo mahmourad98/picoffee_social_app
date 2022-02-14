@@ -34,6 +34,7 @@ class CustomButton extends StatelessWidget {
     return FadedScaleAnimation(
       GestureDetector(
         onTap: onTap as void Function()?,
+        // onTap: ()=>onTap,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius ?? 8),

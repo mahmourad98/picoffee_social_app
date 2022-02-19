@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbose_share_world/components/service.dart';
+import 'package:picoffee/components/service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 

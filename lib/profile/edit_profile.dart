@@ -1,8 +1,8 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/providers/UserProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override

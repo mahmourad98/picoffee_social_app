@@ -2,11 +2,11 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/followers/followers.dart';
-import 'package:verbose_share_world/following/following.dart';
-import 'package:verbose_share_world/providers/FollowersProvider.dart';
-import 'package:verbose_share_world/providers/FollowingProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/followers/followers.dart';
+import 'package:picoffee/following/following.dart';
+import 'package:picoffee/providers/FollowersProvider.dart';
+import 'package:picoffee/providers/FollowingProvider.dart';
 
 
 class UserProfileScreen extends StatefulWidget {

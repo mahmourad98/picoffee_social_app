@@ -1,11 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/auth/registration/registration_ui.dart';
-import 'package:verbose_share_world/components/custom_button.dart';
-import 'package:verbose_share_world/components/entry_field.dart';
-import 'package:verbose_share_world/home/home.dart';
-import 'package:verbose_share_world/providers/UserProvider.dart';
+import 'package:picoffee/auth/registration/registration_ui.dart';
+import 'package:picoffee/components/custom_button.dart';
+import 'package:picoffee/components/entry_field.dart';
+import 'package:picoffee/home/home.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 import 'dart:io' as IO;
 
 class LoginUi extends StatefulWidget {

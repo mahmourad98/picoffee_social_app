@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
 
 import 'group/create_group_add_member.dart';
 import 'group/group_chat_screen.dart';

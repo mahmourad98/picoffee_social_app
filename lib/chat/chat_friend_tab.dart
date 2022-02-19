@@ -3,8 +3,8 @@ import 'dart:ui';
 
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
-import 'package:verbose_share_world/chat/chat_screen.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
+import 'package:picoffee/chat/chat_screen.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
 
 
 class ChatItems {

@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/providers/TopTweetProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/providers/TopTweetProvider.dart';
 
 class CommentScreen extends StatefulWidget {
   List comm = [];

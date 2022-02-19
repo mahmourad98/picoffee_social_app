@@ -1,9 +1,9 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/profile/user_profile.dart';
-import 'package:verbose_share_world/providers/FollowersProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/profile/user_profile.dart';
+import 'package:picoffee/providers/FollowersProvider.dart';
 
 
 class FollowersScreen extends StatelessWidget {

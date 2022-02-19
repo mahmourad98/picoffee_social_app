@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
-import 'package:verbose_share_world/components/service.dart';
+import 'package:picoffee/components/service.dart';
 
 import 'FollowersProvider.dart';
 

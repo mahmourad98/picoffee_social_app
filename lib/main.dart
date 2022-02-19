@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbose_share_world/app_theme/app_theme.dart';
-import 'package:verbose_share_world/home/home.dart';
-import 'package:verbose_share_world/providers/FollowersProvider.dart';
-import 'package:verbose_share_world/providers/FollowingProvider.dart';
-import 'package:verbose_share_world/providers/GenderProvider.dart';
-import 'package:verbose_share_world/providers/TopTweetProvider.dart';
-import 'package:verbose_share_world/providers/TweetProvider.dart';
+import 'package:picoffee/app_theme/app_theme.dart';
+import 'package:picoffee/home/home.dart';
+import 'package:picoffee/providers/FollowersProvider.dart';
+import 'package:picoffee/providers/FollowingProvider.dart';
+import 'package:picoffee/providers/GenderProvider.dart';
+import 'package:picoffee/providers/TopTweetProvider.dart';
+import 'package:picoffee/providers/TweetProvider.dart';
 
-import 'package:verbose_share_world/providers/UserProvider.dart';
-import 'package:verbose_share_world/topTweets/topTweets.dart';
+import 'package:picoffee/providers/UserProvider.dart';
+import 'package:picoffee/topTweets/topTweets.dart';
 
 import 'auth/login/login_ui.dart';
 

@@ -2,15 +2,15 @@ import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:verbose_share_world/app_config/app_config.dart';
-import 'package:verbose_share_world/auth/login/login_ui.dart';
-import 'package:verbose_share_world/auth/registration/registration_ui.dart';
-import 'package:verbose_share_world/comments/comments.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/profile/edit_profile.dart';
-import 'package:verbose_share_world/profile/my_profile_screen.dart';
-import 'package:verbose_share_world/profile/user_profile.dart';
-import 'package:verbose_share_world/providers/TopTweetProvider.dart';
+import 'package:picoffee/app_config/app_config.dart';
+import 'package:picoffee/auth/login/login_ui.dart';
+import 'package:picoffee/auth/registration/registration_ui.dart';
+import 'package:picoffee/comments/comments.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/profile/edit_profile.dart';
+import 'package:picoffee/profile/my_profile_screen.dart';
+import 'package:picoffee/profile/user_profile.dart';
+import 'package:picoffee/providers/TopTweetProvider.dart';
 
 class FollowingItems {
   String image;

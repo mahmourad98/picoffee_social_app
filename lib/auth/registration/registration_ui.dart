@@ -3,13 +3,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/components/custom_button.dart';
-import 'package:verbose_share_world/components/entry_field.dart';
-import 'package:verbose_share_world/home/home.dart';
-import 'package:verbose_share_world/providers/GenderProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/components/custom_button.dart';
+import 'package:picoffee/components/entry_field.dart';
+import 'package:picoffee/home/home.dart';
+import 'package:picoffee/providers/GenderProvider.dart';
 import 'dart:io' as IO;
-import 'package:verbose_share_world/providers/UserProvider.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 
 class RegistrationUi extends StatefulWidget {
   @override

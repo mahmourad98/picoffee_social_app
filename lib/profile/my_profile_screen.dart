@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
-import 'package:verbose_share_world/followers/followers.dart';
-import 'package:verbose_share_world/following/following.dart';
-import 'package:verbose_share_world/profile/edit_profile.dart';
-import 'package:verbose_share_world/providers/FollowersProvider.dart';
-import 'package:verbose_share_world/providers/FollowingProvider.dart';
-import 'package:verbose_share_world/providers/TweetProvider.dart';
-import 'package:verbose_share_world/providers/UserProvider.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/followers/followers.dart';
+import 'package:picoffee/following/following.dart';
+import 'package:picoffee/profile/edit_profile.dart';
+import 'package:picoffee/providers/FollowersProvider.dart';
+import 'package:picoffee/providers/FollowingProvider.dart';
+import 'package:picoffee/providers/TweetProvider.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 
 
 class MyProfileScreen extends StatefulWidget {

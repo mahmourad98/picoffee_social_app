@@ -1,7 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:verbose_share_world/app_theme/application_colors.dart';
+import 'package:picoffee/app_theme/application_colors.dart';
 
 
 class TextPostScreen extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:verbose_share_world/components/service.dart';
+import 'package:picoffee/components/service.dart';
 
 class UserProvider with ChangeNotifier {
   String? id;

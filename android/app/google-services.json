@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:871766261563:android:6b2d9534e7c1c2946f411e",
+        "mobilesdk_app_id": "1:871766261563:android:a2e6b09e3ef3e89d6f411e",
         "android_client_info": {
-          "package_name": "com.flutter.share_world"
+          "package_name": "com.picoffee.app"
         }
       },
       "oauth_client": [

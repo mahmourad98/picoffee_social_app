@@ -1,12 +1,15 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:verbose_share_world/app_theme/application_colors.dart';
 import 'package:verbose_share_world/profile/user_profile.dart';
+import 'package:verbose_share_world/providers/FollowingProvider.dart';
 
 
 class FollowingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var followings = Provider.of<FollowingProvider>(context, listen: true).followingUsers;
     var theme = Theme.of(context);
     return DefaultTabController(
       length: 4,
@@ -25,7 +28,7 @@ class FollowingScreen extends StatelessWidget {
           child: FadedSlideAnimation(
             ListView.builder(
               physics: BouncingScrollPhysics(),
-              itemCount: 20,
+              itemCount: followings.length,
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
@@ -59,7 +62,7 @@ class FollowingScreen extends StatelessWidget {
                               style: TextStyle(
                                   color: theme.primaryColor, fontSize: 12)),
                           TextSpan(
-                              text: 'kayvin taylor',
+                              text: followings[index]['name'],
                               style: theme.textTheme.subtitle2!.copyWith(
                                 fontSize: 14,
                               )),

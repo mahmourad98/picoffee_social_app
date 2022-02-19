@@ -1,9 +1,12 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:verbose_share_world/app_theme/application_colors.dart';
 import 'package:verbose_share_world/followers/followers.dart';
 import 'package:verbose_share_world/following/following.dart';
+import 'package:verbose_share_world/providers/FollowersProvider.dart';
+import 'package:verbose_share_world/providers/FollowingProvider.dart';
 
 
 class UserProfileScreen extends StatefulWidget {
@@ -18,6 +21,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   void initState() {
     super.initState();
+    Provider.of<FollowersProvider>(context, listen: false).getFollowers();
+    Provider.of<FollowingProvider>(context, listen: false).getFollowing();
     _tabController = TabController(
       length: 2,
       vsync: this,
@@ -49,7 +54,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           children: [
             Container(
               color: ApplicationColors.white,
-              height: bheight * 0.4,
+              height: bheight * 0.44,
               child: LayoutBuilder(
                 builder: (context, constraints) => Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -175,24 +180,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                     ),
                     SizedBox(height: 20),
-                    TabBar(
-                      controller: _tabController,
-                      isScrollable: true,
-                      indicatorColor: theme.primaryColor,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      tabs: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Posts',
-                            style: theme.textTheme.bodyText1,
-                          ),
+                    Expanded(
+                      child: Container(
+                        child: TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          indicatorColor: theme.primaryColor,
+                          indicatorSize: TabBarIndicatorSize.label,
+                          tabs: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Posts',
+                                style: theme.textTheme.bodyText1,
+                              ),
+                            ),
+                            Text(
+                              'Stories',
+                              style: theme.textTheme.bodyText1,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Stories',
-                          style: theme.textTheme.bodyText1,
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -201,148 +210,150 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             // TabBarView(
             //   controller: _tabController,
             //   children: [
-            Container(
-              height: bheight * 0.6,
-              child: ListView.builder(
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 0,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            contentPadding: EdgeInsets.all(0),
-                            leading: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => UserProfileScreen()));
-                              },
-                              child: CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('assets/images/Layer710.png'),
+            Expanded(
+              child: Container(
+                //height: bheight * 0.6,
+                child: ListView.builder(
+                  itemCount: 2,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      elevation: 0,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              contentPadding: EdgeInsets.all(0),
+                              leading: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => UserProfileScreen()));
+                                },
+                                child: CircleAvatar(
+                                  backgroundImage:
+                                  AssetImage('assets/images/Layer710.png'),
+                                ),
+                              ),
+                              title: Text(
+                                'Full Name',
+                                style: theme.textTheme.subtitle2!.copyWith(
+                                  fontSize: 13.3,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Today 10:00 pm',
+                                style: theme.textTheme.subtitle2!.copyWith(
+                                  color: theme.hintColor,
+                                  fontSize: 10.7,
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Image.asset(
+                                    'assets/Icons/ic_share.png',
+                                    scale: 3,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Icon(
+                                    Icons.bookmark_border,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Icon(
+                                    Icons.more_vert,
+                                    size: 18,
+                                  ),
+                                ],
                               ),
                             ),
-                            title: Text(
-                              'Full Name',
-                              style: theme.textTheme.subtitle2!.copyWith(
-                                fontSize: 13.3,
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset('assets/images/Layer709.png'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.remove_red_eye,
+                                        color: ApplicationColors.grey,
+                                        size: 18.3,
+                                      ),
+                                      SizedBox(width: 7),
+                                      Text(
+                                        '1.2k',
+                                        style: TextStyle(
+                                            color: ApplicationColors.grey,
+                                            fontSize: 11.7,
+                                            letterSpacing: 1),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      FaIcon(
+                                        Icons.repeat_rounded,
+                                        color: ApplicationColors.grey,
+                                        size: 18.3,
+                                      ),
+                                      SizedBox(width: 7),
+                                      Text(
+                                        '287',
+                                        style: TextStyle(
+                                            color: ApplicationColors.grey,
+                                            fontSize: 11.7,
+                                            letterSpacing: 0.5),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.chat_bubble_outline,
+                                        color: ApplicationColors.grey,
+                                        size: 18.3,
+                                      ),
+                                      SizedBox(width: 7),
+                                      Text(
+                                        '287',
+                                        style: TextStyle(
+                                            color: ApplicationColors.grey,
+                                            fontSize: 11.7,
+                                            letterSpacing: 0.5),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.favorite_border,
+                                        color: ApplicationColors.grey,
+                                        size: 18.3,
+                                      ),
+                                      SizedBox(width: 7),
+                                      Text(
+                                        '8.2k',
+                                        style: TextStyle(
+                                            color: ApplicationColors.grey,
+                                            fontSize: 11.7,
+                                            letterSpacing: 1),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            subtitle: Text(
-                              'Today 10:00 pm',
-                              style: theme.textTheme.subtitle2!.copyWith(
-                                color: theme.hintColor,
-                                fontSize: 10.7,
-                              ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Image.asset(
-                                  'assets/Icons/ic_share.png',
-                                  scale: 3,
-                                ),
-                                SizedBox(width: 10),
-                                Icon(
-                                  Icons.bookmark_border,
-                                  size: 18,
-                                ),
-                                SizedBox(width: 10),
-                                Icon(
-                                  Icons.more_vert,
-                                  size: 18,
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.asset('assets/images/Layer709.png'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.remove_red_eye,
-                                      color: ApplicationColors.grey,
-                                      size: 18.3,
-                                    ),
-                                    SizedBox(width: 7),
-                                    Text(
-                                      '1.2k',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 1),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    FaIcon(
-                                      Icons.repeat_rounded,
-                                      color: ApplicationColors.grey,
-                                      size: 18.3,
-                                    ),
-                                    SizedBox(width: 7),
-                                    Text(
-                                      '287',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 0.5),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.chat_bubble_outline,
-                                      color: ApplicationColors.grey,
-                                      size: 18.3,
-                                    ),
-                                    SizedBox(width: 7),
-                                    Text(
-                                      '287',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 0.5),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.favorite_border,
-                                      color: ApplicationColors.grey,
-                                      size: 18.3,
-                                    ),
-                                    SizedBox(width: 7),
-                                    Text(
-                                      '8.2k',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 1),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
             //   Container(),

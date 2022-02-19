@@ -71,7 +71,7 @@ class _LoginUiState extends State<LoginUi> {
                           setState(() {
                             clicked = true;
                           });
-                          await Provider.of<User>(context, listen: false)
+                          await Provider.of<UserProvider>(context, listen: false)
                               .signIn(emailC, passwordC);
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
@@ -107,9 +107,9 @@ class _LoginUiState extends State<LoginUi> {
 
   getPlatform() {
     if (IO.Platform.isAndroid) {
-      Provider.of<User>(context, listen: false).devicename = "android";
+      Provider.of<UserProvider>(context, listen: false).deviceName = "android";
     } else if (IO.Platform.isIOS) {
-      Provider.of<User>(context, listen: false).devicename = "IOS";
+      Provider.of<UserProvider>(context, listen: false).deviceName = "IOS";
     }
   }
 }

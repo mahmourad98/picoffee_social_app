@@ -6,8 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verbose_share_world/app_theme/app_theme.dart';
 import 'package:verbose_share_world/home/home.dart';
+import 'package:verbose_share_world/providers/FollowersProvider.dart';
+import 'package:verbose_share_world/providers/FollowingProvider.dart';
 import 'package:verbose_share_world/providers/GenderProvider.dart';
 import 'package:verbose_share_world/providers/TopTweetProvider.dart';
+import 'package:verbose_share_world/providers/TweetProvider.dart';
 
 import 'package:verbose_share_world/providers/UserProvider.dart';
 import 'package:verbose_share_world/topTweets/topTweets.dart';
@@ -35,9 +38,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_)=>User()),
+        ChangeNotifierProvider(create: (_)=>UserProvider()),
         ChangeNotifierProvider(create: (_)=>Gender()),
         ChangeNotifierProvider(create: (_)=>TopTweets()),
+        ChangeNotifierProvider(create: (_)=>FollowersProvider()),
+        ChangeNotifierProvider(create: (_)=>FollowingProvider()),
+        ChangeNotifierProvider(create: (_)=>TweetsProvider()),
       ],
       child: MaterialApp(
         builder: BotToastInit(),

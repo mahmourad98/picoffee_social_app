@@ -1,10 +1,16 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verbose_share_world/app_theme/application_colors.dart';
 import 'package:verbose_share_world/followers/followers.dart';
 import 'package:verbose_share_world/following/following.dart';
 import 'package:verbose_share_world/profile/edit_profile.dart';
+import 'package:verbose_share_world/providers/FollowersProvider.dart';
+import 'package:verbose_share_world/providers/FollowingProvider.dart';
+import 'package:verbose_share_world/providers/TweetProvider.dart';
+import 'package:verbose_share_world/providers/UserProvider.dart';
 
 
 class MyProfileScreen extends StatefulWidget {
@@ -13,28 +19,43 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-
+  
+  void initState() {
+    super.initState();
+    Provider.of<FollowersProvider>(context, listen: false).getFollowers();
+    Provider.of<FollowingProvider>(context, listen: false).getFollowing();
+    Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
+    var currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
+
     final myAppBar = AppBar(
       backgroundColor: ApplicationColors.white,
       leading: IconButton(
         onPressed: () {
           Navigator.of(context).pop();
         },
-        icon: Icon(Icons.chevron_left),
+        icon: Image.asset(
+          'assets/Icons/back_arrow_icon.png',
+        ),
       ),
       elevation: 0,
     );
+
     final bheight = mediaQuery.size.height -
         mediaQuery.padding.top -
         myAppBar.preferredSize.height;
+
     return Scaffold(
       backgroundColor: ApplicationColors.white,
-      appBar: myAppBar,
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(56.0), // here the desired height
+          child: myAppBar,
+      ),
       body: FadedSlideAnimation(
         Column(
           children: [
@@ -54,7 +75,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('9784', style: theme.textTheme.headline6),
+                                Text('${Provider.of<FollowersProvider>(context, listen: true).followersUsers.length.toString()}', style: theme.textTheme.headline6),
                                 Text(
                                   'Followers',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -81,7 +102,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('3224', style: theme.textTheme.headline6),
+                                Text('${Provider.of<FollowingProvider>(context, listen: true).followingUsers.length.toString()}', style: theme.textTheme.headline6),
                                 Text(
                                   'Following',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -101,11 +122,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       ),
                     ),
                     Text(
-                      'Full Name',
+                      '${Provider.of<UserProvider>(context, listen: true).name}',
                       style: theme.textTheme.headline6,
                     ),
                     Text(
-                      '@username',
+                      '${Provider.of<UserProvider>(context, listen: true).email}',
                       style: theme.textTheme.subtitle2!.copyWith(
                         color: theme.hintColor,
                         fontSize: 12,
@@ -132,6 +153,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.scaffoldBackgroundColor,
                               fontSize: 12,
+                              fontWeight: FontWeight.bold
                             ),
                           ),
                         ),
@@ -147,7 +169,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             Container(
               height: bheight * 0.6,
               child: ListView.builder(
-                itemCount: 2,
+                itemCount: Provider.of<TweetsProvider>(context, listen: true).currentUserTweets.length,
                 itemBuilder: (context, index) {
                   return Card(
                     elevation: 0,
@@ -162,7 +184,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   AssetImage('assets/images/Layer710.png'),
                             ),
                             title: Text(
-                              'Full Name',
+                              '${Provider.of<UserProvider>(context, listen: true).name}',
                               style: theme.textTheme.subtitle2!.copyWith(
                                 fontSize: 13.3,
                               ),
@@ -195,6 +217,20 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   color: ApplicationColors.grey,
                                 ),
                               ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '${currentUserTweets[index]['tweet'].toString()}',
+                                style: theme.textTheme.headline5?.copyWith(
+                                  color: ApplicationColors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                           ClipRRect(

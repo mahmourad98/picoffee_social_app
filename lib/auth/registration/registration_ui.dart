@@ -108,7 +108,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         onChanged: (int? valyue) {
                           Provider.of<Gender>(context, listen: false).isMale =
                               valyue!;
-                          Provider.of<User>(context, listen: false).gender =
+                          Provider.of<UserProvider>(context, listen: false).gender =
                               "male";
                         },
                         focusColor: Colors.amberAccent,
@@ -126,7 +126,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         onChanged: (int? valyue) {
                           Provider.of<Gender>(context, listen: false).isMale =
                               valyue!;
-                          Provider.of<User>(context, listen: false).gender =
+                          Provider.of<UserProvider>(context, listen: false).gender =
                               "female";
                         },
                       ),
@@ -144,7 +144,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                               title: 'enter name and email ',
                               duration: Duration(seconds: 3));
                         } else if (passwordC.text.isEmpty ||
-                            Provider.of<User>(context, listen: false)
+                            Provider.of<UserProvider>(context, listen: false)
                                 .gender
                                 .isEmpty) {
                           BotToast.showSimpleNotification(
@@ -154,7 +154,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                           setState(() {
                             clicked = true;
                           });
-                          await Provider.of<User>(context, listen: false)
+                          await Provider.of<UserProvider>(context, listen: false)
                               .signUp(nameC, emailC, passwordC);
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
@@ -177,15 +177,15 @@ class _RegistrationUiState extends State<RegistrationUi> {
 
   getUserToken() async {
     return await firebaseMessaging.getToken().then((value) {
-      Provider.of<User>(context, listen: false).fcmtoken = value;
+      Provider.of<UserProvider>(context, listen: false).fcmtoken = value;
     });
   }
 
   getPlatform() {
     if (IO.Platform.isAndroid) {
-      Provider.of<User>(context, listen: false).devicename = "android";
+      Provider.of<UserProvider>(context, listen: false).deviceName = "android";
     } else if (IO.Platform.isIOS) {
-      Provider.of<User>(context, listen: false).devicename = "IOS";
+      Provider.of<UserProvider>(context, listen: false).deviceName = "IOS";
     }
   }
 }

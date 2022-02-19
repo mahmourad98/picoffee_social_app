@@ -1,6 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verbose_share_world/app_config/app_config.dart';
 import 'package:verbose_share_world/comments/comments.dart';
@@ -9,6 +10,10 @@ import 'package:verbose_share_world/post/text_post.dart';
 import 'package:verbose_share_world/profile/edit_profile.dart';
 import 'package:verbose_share_world/profile/my_profile_screen.dart';
 import 'package:verbose_share_world/profile/user_profile.dart';
+import 'package:verbose_share_world/providers/FollowersProvider.dart';
+import 'package:verbose_share_world/providers/FollowingProvider.dart';
+import 'package:verbose_share_world/providers/TweetProvider.dart';
+import 'package:verbose_share_world/providers/UserProvider.dart';
 import 'package:verbose_share_world/topTweets/topTweets.dart';
 
 class FollowingItems {
@@ -19,12 +24,17 @@ class FollowingItems {
 }
 
 class HomeScreen extends StatefulWidget {
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
+
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+
+  late String name;
+  late String email;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -65,6 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
     FollowingItems('assets/images/Layer950.png', 'Emili Williamson'),
   ];
 
+  @override
+  void initState() {
+    Provider.of<UserProvider>(context, listen: false).getUserInfo();
+    Provider.of<FollowersProvider>(context, listen: false).getFollowers();
+    Provider.of<FollowingProvider>(context, listen: false).getFollowing();
+    Provider.of<TweetsProvider>(context, listen: false).getFollowingUsersTweets();
+    Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+    super.initState();
+  }
+
   void onTap(int index) {
     setState(() {
       _currentIndex = index;
@@ -74,12 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final theme = Theme.of(context);
 
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         AppBar().preferredSize.height;
 
-    final theme = Theme.of(context);
+    var followingUsersTweets = Provider.of<TweetsProvider>(context, listen: true).followingUsersTweets;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -284,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FadedSlideAnimation(
                 ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: _followingItems.length,
+                  itemCount: followingUsersTweets.length,
                   itemBuilder: (context, index) {
                     return Card(
                       elevation: 0,
@@ -305,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               title: Text(
-                                _followingItems[index].name,
+                                followingUsersTweets[index]['user']['name'],
                                 style: theme.textTheme.bodyText1!
                                     .copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -314,6 +335,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: theme.textTheme.bodyText1!.copyWith(
                                     color: ApplicationColors.textGrey,
                                     fontSize: 11),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${followingUsersTweets[index]['tweet'].toString()}',
+                                  style: theme.textTheme.headline5?.copyWith(
+                                      color: ApplicationColors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                             GestureDetector(

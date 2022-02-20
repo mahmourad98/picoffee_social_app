@@ -104,9 +104,9 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         activeColor: Colors.red,
                         value: 0,
                         groupValue:
-                            Provider.of<Gender>(context, listen: true).isMale,
+                            Provider.of<MyGenderProvider>(context, listen: true).myValue,
                         onChanged: (int? valyue) {
-                          Provider.of<Gender>(context, listen: false).isMale =
+                          Provider.of<MyGenderProvider>(context, listen: false)..myValue =
                               valyue!;
                           Provider.of<UserProvider>(context, listen: false).gender =
                               "male";
@@ -122,9 +122,9 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         activeColor: Colors.red,
                         value: 1,
                         groupValue:
-                            Provider.of<Gender>(context, listen: false).isMale,
+                            Provider.of<MyGenderProvider>(context, listen: false).myValue,
                         onChanged: (int? valyue) {
-                          Provider.of<Gender>(context, listen: false).isMale =
+                          Provider.of<MyGenderProvider>(context, listen: false).myValue =
                               valyue!;
                           Provider.of<UserProvider>(context, listen: false).gender =
                               "female";
@@ -177,7 +177,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
 
   getUserToken() async {
     return await firebaseMessaging.getToken().then((value) {
-      Provider.of<UserProvider>(context, listen: false).fcmtoken = value;
+      Provider.of<UserProvider>(context, listen: false).fcmToken = value;
     });
   }
 

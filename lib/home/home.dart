@@ -77,11 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    Provider.of<UserProvider>(context, listen: false).getUserInfo();
-    Provider.of<FollowersProvider>(context, listen: false).getFollowers();
-    Provider.of<FollowingProvider>(context, listen: false).getFollowing();
-    Provider.of<TweetsProvider>(context, listen: false).getFollowingUsersTweets();
-    Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+     Provider.of<UserProvider>(context, listen: false).getUserInfo();
+     Provider.of<FollowersProvider>(context, listen: false).getFollowers();
+     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
+     Provider.of<TweetsProvider>(context, listen: false).getFollowingUsersTweets();
+     Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
     super.initState();
   }
 
@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     var name = Provider.of<UserProvider>(context, listen: true).name;
-
+    print('name $name');
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         AppBar().preferredSize.height;
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Container(
                           child: Text(
-                            name!,
+                            (name == null) ? "Null" : name,
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
                             ),

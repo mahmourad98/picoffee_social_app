@@ -15,10 +15,10 @@ class UserProvider with ChangeNotifier {
   String? deviceName;
   String? phone;
   String gender = '';
-  String? imageUrl = '';
+  String imageUrl = '';
   var token;
   var logged_in;
-  var fcmtoken;
+  var fcmToken;
 
   final Map<String, String> profile= {
     "id": "",
@@ -39,22 +39,23 @@ class UserProvider with ChangeNotifier {
       'password': password.text,
       'device_name': deviceName,
       'gender': gender,
-      'fcm_token': fcmtoken.toString()
+      'fcm_token': fcmToken.toString()
     });
 
     Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('id', data['user']['id'].toString());
-    prefs.setString('name', data['user']['name']);
-    prefs.setString('email', data['user']['email']);
-    prefs.setString('image', data['user']['image'].toString());
-    prefs.setString('profileId', data['user']['profile']['id'].toString());
-    prefs.setString('profileGender', data['user']['profile']['gender'].toString());
-    prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
-    prefs.setString('token', data['token']);
-    prefs.setBool('logged_in', true);
-    getUserInfo();
+    await prefs.setString('id', data['user']['id'].toString());
+    await prefs.setString('name', data['user']['name']);
+    await prefs.setString('email', data['user']['email']);
+    await prefs.setString('image', data['user']['image'].toString());
+    await prefs.setString('profileId', data['user']['profile']['id'].toString());
+    await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+    await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
+    await prefs.setString('token', data['token']);
+    await prefs.setBool('logged_in', true);
+
+    await getUserInfo();
 
     notifyListeners();
   }
@@ -71,17 +72,17 @@ class UserProvider with ChangeNotifier {
     Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('id', data['user']['id'].toString());
-    prefs.setString('name', data['user']['name']);
-    prefs.setString('email', data['user']['email']);
-    prefs.setString('image', data['user']['image'].toString());
-    prefs.setString('profileId', data['user']['profile']['id'].toString());
-    prefs.setString('profileGender', data['user']['profile']['gender'].toString());
-    prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
-    prefs.setString('token', data['token'].toString());
-    prefs.setBool('logged_in', true);
+    await prefs.setString('id', data['user']['id'].toString());
+    await prefs.setString('name', data['user']['name']);
+    await prefs.setString('email', data['user']['email']);
+    await prefs.setString('image', data['user']['image'].toString());
+    await prefs.setString('profileId', data['user']['profile']['id'].toString());
+    await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+    await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
+    await prefs.setString('token', data['token'].toString());
+    await prefs.setBool('logged_in', true);
 
-    getUserInfo();
+    await getUserInfo();
 
     notifyListeners();
   }
@@ -98,55 +99,64 @@ class UserProvider with ChangeNotifier {
     this.profile['gender'] = prefs.getString('profileGender')!;
     this.profile['fcmToken'] = prefs.getString('profileFcmToken')!;
 
-    print("id: ${this.id}");
-    print("name: ${this.name}");
-    print("email: ${this.email}");
-    print("imageUrl: ${this.imageUrl}");
-    print("token: ${this.token}");
-    print("logged_in: ${this.logged_in}");
-    print("profile id: ${this.profile['id']}");
-    print("profile gender: ${this.profile['gender']}");
-    print("profile fcm token: ${this.profile['fcmToken']}");
+    //print("id: ${this.id}");
+    //print("name: ${this.name}");
+    //print("email: ${this.email}");
+    //print("imageUrl: ${this.imageUrl}");
+    //print("token: ${this.token}");
+    //print("logged_in: ${this.logged_in}");
+    //print("profile id: ${this.profile['id']}");
+    //print("profile gender: ${this.profile['gender']}");
+    //print("profile fcm token: ${this.profile['fcmToken']}");
 
     notifyListeners();
   }
 
-  Future<dynamic> updateUserInfo(dynamic email, dynamic name, dynamic gender) async{
+  Future<dynamic> updateUserInfo(dynamic email, dynamic name, dynamic gender, dynamic image) async{
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     // this.id = prefs.getString('userId')!;
     // this.token = prefs.getString('token')!;
     var url = api.ApiUrl + "v1/users/update/${this.id}";
+    var body = <String, String>{
+      'email': email.toString(),
+      'name': name.toString(),
+      'gender': gender.toString(),
+    };
     //print(url);
     //print(name);
     //print(email);
-    //print(gender);
+    //print("gender to update: $gender");
+    if(image != null){
+      var imageBytes = image.readAsBytesSync();
+      var imageEncoded = base64Encode(imageBytes);
+      body['image'] = imageEncoded.toString();
+      //print("we have Image");
+    }
 
     var response = await http.post(
       Uri.parse(url),
-      body: {
-        'email': email.toString(),
-        'name': name.toString(),
-        'gender': gender.toString()
-      },
+      body: body,
       headers: <String, String>{
         'Authorization': 'Bearer ${this.token}',
       }
     );
+    //print("response has come");
+
+
 
     Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body)['data']);
-    //print(data);
+    print(data);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('id', data['id'].toString());
-    prefs.setString('name', data['attributes']['name'].toString());
-    prefs.setString('email', data['attributes']['email'].toString());
-    prefs.setString('image', data['attributes']['image'].toString());
-    prefs.setString('profileId', data['attributes']['profile']['id'].toString());
-    prefs.setString('profileGender', data['attributes']['profile']['gender'].toString());
-    prefs.setString('profileFcmToken', data['attributes']['profile']['fcm_token'].toString());
+    await prefs.setString('id', data['id'].toString());
+    await prefs.setString('name', data['attributes']['name'].toString());
+    await prefs.setString('email', data['attributes']['email'].toString());
+    await prefs.setString('image', data['attributes']['image'].toString());
+    await prefs.setString('profileId', data['attributes']['profile']['id'].toString());
+    await prefs.setString('profileGender', data['attributes']['profile']['gender'].toString());
+    await prefs.setString('profileFcmToken', data['attributes']['profile']['fcm_token'].toString());
 
-    getUserInfo();
-
+    await getUserInfo();
     notifyListeners();
   }
 }

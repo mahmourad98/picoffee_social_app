@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:picoffee/providers/GenderProvider.dart';
+import 'package:picoffee/providers/ImageProvider.dart';
 import 'package:picoffee/topTweets/topTweets.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -17,13 +22,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController usernameTextController = TextEditingController();
   TextEditingController phoneTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
-  TextEditingController genderTextController = TextEditingController();
+
   var _radioValue;
+  var _pickedImage;
 
   late var name;
   late var email;
   late var phone;
   late var gender;
+  late var image;
 
   @override
   void initState() {
@@ -32,17 +39,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     email = Provider.of<UserProvider>(context, listen: false).email;
     phone = Provider.of<UserProvider>(context, listen: false).phone ?? "Not Assigned Yet.";
     gender = Provider.of<UserProvider>(context, listen: false).profile['gender']!;
+    image = Provider.of<UserProvider>(context, listen: false).imageUrl;
     nameTextController.text = this.name!;
     emailTextController.text = this.email!;
     usernameTextController.text = this.email.split('@')[0].toString();
     phoneTextController.text = this.phone;
+
     if(this.gender.toString().toUpperCase().startsWith('F')){
       _radioValue = 1;
     }
     else{
       _radioValue = 0;
     }
-    Provider.of<Gender>(context, listen: false).isMale = _radioValue;
+    Provider.of<MyGenderProvider>(context, listen: false).initiate(_radioValue);
+
     super.initState();
   }
 
@@ -50,7 +60,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-    var _radioValue2 = Provider.of<Gender>(context, listen: true).isMale;
+    _radioValue = Provider.of<MyGenderProvider>(context, listen: true).myValue;
+    print("radio value: $_radioValue");
+    _pickedImage = Provider.of<MyImageProvider>(context, listen: true).myImage;
+    if(_pickedImage != null){
+      print("picked image: true");
+    }
+    else{
+      print("picked image: false");
+    }
 
     final myAppBar = AppBar(
       title: Text(
@@ -83,6 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
     final bheight = mediaQuery.size.height - mediaQuery.padding.top - myAppBar.preferredSize.height;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(64.0),
@@ -99,30 +118,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   margin: EdgeInsets.only(top: 20, bottom: 20),
                   width: double.infinity,
                   alignment: Alignment.center,
-                  child: Stack(
-                    children: [
-                      FadedScaleAnimation(
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundImage: AssetImage('assets/images/Layer1677.png'),
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: 7,
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: theme.primaryColor,
+                  child: GestureDetector(
+                    onTap: () async{
+                      await _pickImage().then(
+                        (value) {
+                          Provider.of<MyImageProvider>(context, listen: false).myImage = value;
+                        }
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        FadedScaleAnimation(
+                          CircleAvatar(
+                            radius: 60,
+                            //backgroundImage: (_myImage == null) ? AssetImage('assets/images/Layer1677.png') : Container(child: Image.file(_myImage, fit: BoxFit.cover,),),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  width: 2
+                                )
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: (_pickedImage == null)
+                                  ? (image == "null")
+                                    ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                                    : Image.network(image, width: 128, height: 128,)
+                                  : Image.file(_pickedImage, width: 128, height: 128,)
+                              ),
+                            )
                           ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            size: 18,
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 6,
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.primaryColor,
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              size: 18,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Column(
@@ -222,10 +270,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Radio(
                                 activeColor: Colors.red,
                                 value: 0,
-                                groupValue: _radioValue2,
+                                groupValue: _radioValue,
                                 onChanged: (dynamic value) {
                                   print("male $value");
-                                  Provider.of<Gender>(context, listen: false).isMale = value;
+                                  Provider.of<MyGenderProvider>(context, listen: false).myValue = value;
                                 },
                                 focusColor: Colors.amberAccent,
                               ),
@@ -244,10 +292,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Radio(
                                 activeColor: Colors.red,
                                 value: 1,
-                                groupValue: _radioValue2,
+                                groupValue: _radioValue,
                                 onChanged: (dynamic value) {
                                   print("female $value");
-                                  Provider.of<Gender>(context, listen: false).isMale = value;
+                                  Provider.of<MyGenderProvider>(context, listen: false).myValue = value;
                                 },
                                 focusColor: Colors.amberAccent,
                               ),
@@ -272,10 +320,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         //print(nameTextController.text);
-                        var gender;
-                        switch (_radioValue2){
+                        var gender = "";
+                        switch (_radioValue){
                           case 0:
                             gender = "Male";
                             break;
@@ -283,11 +331,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             gender = "Female";
                             break;
                         }
-                        print("gender ${gender!}");
-                        Provider.of<UserProvider>(context, listen: false).updateUserInfo(
-                            emailTextController.text,
-                            nameTextController.text,
-                            gender!);
+                        //print("gender ${gender!}");
+                        await Provider.of<UserProvider>(context, listen: false).updateUserInfo(
+                          emailTextController.text,
+                          nameTextController.text,
+                          gender,
+                          this._pickedImage
+                        ).then(
+                          (_) {
+                            Provider.of<MyImageProvider>(context, listen: false).myImage = null;
+                          }
+                        );
                       },
                       child: Container(
                         //width: constraints.maxWidth * 0.35,
@@ -318,5 +372,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         slideCurve: Curves.linearToEaseOut,
       ),
     );
+  }
+
+  Future<dynamic> _pickImage() async{
+    try {
+      final ImagePicker _picker = ImagePicker();
+      XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+      if(pickedImage == null) {
+        return null;
+      }
+      else{
+        final image = File(pickedImage.path);
+        return image;
+      }
+    }
+    on PlatformException catch(error) {
+      print("error while picking image: ${error.toString()}");
+    }
   }
 }

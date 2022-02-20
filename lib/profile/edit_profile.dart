@@ -1,8 +1,11 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:picoffee/providers/GenderProvider.dart';
+import 'package:picoffee/topTweets/topTweets.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/providers/UserProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -15,6 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController phoneTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController genderTextController = TextEditingController();
+  var _radioValue;
 
   late var name;
   late var email;
@@ -32,7 +36,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     emailTextController.text = this.email!;
     usernameTextController.text = this.email.split('@')[0].toString();
     phoneTextController.text = this.phone;
-    genderTextController.text = (this.gender.isEmpty) ? "Not Assigned Yet." : this.gender;
+    if(this.gender.toString().toUpperCase().startsWith('F')){
+      _radioValue = 1;
+    }
+    else{
+      _radioValue = 0;
+    }
+    Provider.of<Gender>(context, listen: false).isMale = _radioValue;
     super.initState();
   }
 
@@ -40,6 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
+    var _radioValue2 = Provider.of<Gender>(context, listen: true).isMale;
 
     final myAppBar = AppBar(
       title: Text(
@@ -51,12 +62,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onPressed: () {
           Navigator.of(context).pop();
         },
-        icon: Icon(Icons.chevron_left),
+        icon: Image.asset(
+          'assets/Icons/back_arrow_icon.png',
+        ),
       ),
       elevation: 0,
       actions: [
         TextButton(
-          onPressed: () {},
+          onPressed: () async{
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.clear();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TopTweetsScreen()));
+          },
           child: Text(
             'Logout',
             style: theme.textTheme.button!
@@ -67,7 +84,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     final bheight = mediaQuery.size.height - mediaQuery.padding.top - myAppBar.preferredSize.height;
     return Scaffold(
-      appBar: myAppBar,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(64.0),
+        child: myAppBar,
+      ),
       body: FadedSlideAnimation(
         Container(
           color: ApplicationColors.white,
@@ -191,13 +211,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                       width: double.infinity,
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      child: TextField(
-                        controller: genderTextController,
-                        decoration: InputDecoration(
-                          labelText: 'Gender',
-                          labelStyle: TextStyle(height: 1),
-                          border: InputBorder.none,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Radio(
+                                activeColor: Colors.red,
+                                value: 0,
+                                groupValue: _radioValue2,
+                                onChanged: (dynamic value) {
+                                  print("male $value");
+                                  Provider.of<Gender>(context, listen: false).isMale = value;
+                                },
+                                focusColor: Colors.amberAccent,
+                              ),
+                              Text(
+                                'Male',
+                                style: Theme.of(context).textTheme.headline5?.copyWith(
+                                    fontSize: 20
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Radio(
+                                activeColor: Colors.red,
+                                value: 1,
+                                groupValue: _radioValue2,
+                                onChanged: (dynamic value) {
+                                  print("female $value");
+                                  Provider.of<Gender>(context, listen: false).isMale = value;
+                                },
+                                focusColor: Colors.amberAccent,
+                              ),
+                              Text(
+                                'Female',
+                                style: Theme.of(context).textTheme.headline5?.copyWith(
+                                    fontSize: 20
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                     Divider(
@@ -212,10 +274,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: GestureDetector(
                       onTap: () {
                         //print(nameTextController.text);
+                        var gender;
+                        switch (_radioValue2){
+                          case 0:
+                            gender = "Male";
+                            break;
+                          case 1:
+                            gender = "Female";
+                            break;
+                        }
+                        print("gender ${gender!}");
                         Provider.of<UserProvider>(context, listen: false).updateUserInfo(
                             emailTextController.text,
                             nameTextController.text,
-                            genderTextController.text);
+                            gender!);
                       },
                       child: Container(
                         //width: constraints.maxWidth * 0.35,

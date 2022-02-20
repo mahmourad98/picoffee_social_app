@@ -42,28 +42,18 @@ class UserProvider with ChangeNotifier {
       'fcm_token': fcmtoken.toString()
     });
 
-    Map<String, dynamic> data =
-        new Map<String, dynamic>.from(json.decode(response.body));
+    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     prefs.setString('id', data['user']['id'].toString());
     prefs.setString('name', data['user']['name']);
     prefs.setString('email', data['user']['email']);
-    prefs.setString('gender', data['user']['profile']['gender']);
-    //prefs.setString('token', data['token']);
-    //prefs.setBool('logged_in', true);
-
-    prefs.setString('userId', data['user']['id'].toString());
-    prefs.setString('userName', data['user']['name'].toString());
-    prefs.setString('userEmail', data['user']['email'].toString());
-    prefs.setString('userImage', data['user']['image'].toString());
-    prefs.setString('userProfileId', data['user']['profile']['id'].toString());
-    prefs.setString('userProfileGender', data['user']['profile']['gender'].toString());
-    prefs.setString('userProfileFcmToken', data['user']['profile']['fcm_token'].toString());
-    prefs.setString('token', data['token'].toString());
+    prefs.setString('image', data['user']['image'].toString());
+    prefs.setString('profileId', data['user']['profile']['id'].toString());
+    prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+    prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
+    prefs.setString('token', data['token']);
     prefs.setBool('logged_in', true);
-
     getUserInfo();
 
     notifyListeners();
@@ -78,24 +68,16 @@ class UserProvider with ChangeNotifier {
       'device_name': deviceName,
     });
 
-    Map<String, dynamic> data =
-        new Map<String, dynamic>.from(json.decode(response.body));
+    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     prefs.setString('id', data['user']['id'].toString());
     prefs.setString('name', data['user']['name']);
     prefs.setString('email', data['user']['email']);
-    //prefs.setString('token', data['token']);
-    //prefs.setBool('logged_in', true);
-
-    prefs.setString('userId', data['user']['id'].toString());
-    prefs.setString('userName', data['user']['name'].toString());
-    prefs.setString('userEmail', data['user']['email'].toString());
-    prefs.setString('userImage', data['user']['image'].toString());
-    prefs.setString('userProfileId', data['user']['profile']['id'].toString());
-    prefs.setString('userProfileGender', data['user']['profile']['gender'].toString());
-    prefs.setString('userProfileFcmToken', data['user']['profile']['fcm_token'].toString());
+    prefs.setString('image', data['user']['image'].toString());
+    prefs.setString('profileId', data['user']['profile']['id'].toString());
+    prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+    prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
     prefs.setString('token', data['token'].toString());
     prefs.setBool('logged_in', true);
 
@@ -106,15 +88,15 @@ class UserProvider with ChangeNotifier {
 
   dynamic getUserInfo() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    this.id = prefs.getString('userId')!;
-    this.name = prefs.getString('userName')!;
-    this.email = prefs.getString('userEmail')!;
-    this.imageUrl = prefs.getString('userImage')!;
+    this.id = prefs.getString('id')!;
+    this.name = prefs.getString('name')!;
+    this.email = prefs.getString('email')!;
+    this.imageUrl = prefs.getString('image')!;
     this.token = prefs.getString('token')!;
     this.logged_in = prefs.getBool('logged_in')!;
-    this.profile['id'] = prefs.getString('userProfileId')!;
-    this.profile['gender'] = prefs.getString('userProfileGender')!;
-    this.profile['fcmToken'] = prefs.getString('userProfileFcmToken')!;
+    this.profile['id'] = prefs.getString('profileId')!;
+    this.profile['gender'] = prefs.getString('profileGender')!;
+    this.profile['fcmToken'] = prefs.getString('profileFcmToken')!;
 
     print("id: ${this.id}");
     print("name: ${this.name}");
@@ -130,11 +112,11 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<dynamic> updateUserInfo(dynamic email, dynamic name, dynamic gender) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    this.id = prefs.getString('userId')!;
-    this.token = prefs.getString('token')!;
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // this.id = prefs.getString('userId')!;
+    // this.token = prefs.getString('token')!;
     var url = api.ApiUrl + "v1/users/update/${this.id}";
-    print(url);
+    //print(url);
     //print(name);
     //print(email);
     //print(gender);
@@ -149,30 +131,19 @@ class UserProvider with ChangeNotifier {
       headers: <String, String>{
         'Authorization': 'Bearer ${this.token}',
       }
-    ).then(
-      (_) async{
-        var _url = api.ApiUrl + "v1/users/${this.id}";
-        var _response = await http.get(
-          Uri.parse(_url),
-          headers: <String, String>{
-            'Authorization': 'Bearer ${this.token}',
-          }
-        );
-        Map<String, dynamic> data =
-        new Map<String, dynamic>.from(json.decode(_response.body));
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('userId', data['attributes']['id'].toString());
-        prefs.setString('userName', data['attributes']['name'].toString());
-        prefs.setString('userEmail', data['attributes']['email'].toString());
-        prefs.setString('userImage', data['attributes']['image'].toString());
-        prefs.setString('userProfileId', data['attributes']['profile']['id'].toString());
-        prefs.setString('userProfileGender', data['attributes']['profile']['gender'].toString());
-        prefs.setString('userProfileFcmToken', data['attributes']['profile']['fcm_token'].toString());
-      }
     );
-    Map<String, dynamic> data =
-    new Map<String, dynamic>.from(json.decode(response.body));
+
+    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body)['data']);
+    //print(data);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('id', data['id'].toString());
+    prefs.setString('name', data['attributes']['name'].toString());
+    prefs.setString('email', data['attributes']['email'].toString());
+    prefs.setString('image', data['attributes']['image'].toString());
+    prefs.setString('profileId', data['attributes']['profile']['id'].toString());
+    prefs.setString('profileGender', data['attributes']['profile']['gender'].toString());
+    prefs.setString('profileFcmToken', data['attributes']['profile']['fcm_token'].toString());
 
     getUserInfo();
 

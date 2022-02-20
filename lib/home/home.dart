@@ -96,6 +96,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final mediaQuery = MediaQuery.of(context);
     final theme = Theme.of(context);
 
+    var name = Provider.of<UserProvider>(context, listen: true).name;
+
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         AppBar().preferredSize.height;
@@ -151,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Container(
                           child: Text(
-                            'Samantha Smith',
+                            name!,
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
                             ),

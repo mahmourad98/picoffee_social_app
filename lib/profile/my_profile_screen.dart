@@ -24,6 +24,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     super.initState();
     Provider.of<FollowersProvider>(context, listen: false).getFollowers();
     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
+    print("getting tweets");
     Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
   }
 

@@ -1,5 +1,6 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/profile/user_profile.dart';
@@ -9,7 +10,9 @@ import 'package:picoffee/providers/FollowersProvider.dart';
 class FollowersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var followers = Provider.of<FollowersProvider>(context, listen: true).followersUsers;
+    var myFollowers = Provider.of<FollowersProvider>(context, listen: true).followersUsers;
+    var myUser = Provider.of<UserProvider>(context, listen: true);
+    var myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
     var theme = Theme.of(context);
     return DefaultTabController(
       length: 4,
@@ -28,7 +31,7 @@ class FollowersScreen extends StatelessWidget {
           child: FadedSlideAnimation(
             ListView.builder(
               physics: BouncingScrollPhysics(),
-              itemCount: followers.length,
+              itemCount: myFollowers.length,
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
@@ -36,13 +39,17 @@ class FollowersScreen extends StatelessWidget {
                     leading: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => UserProfileScreen(id: followers[index]['id'].toString(),)));
+                          MaterialPageRoute(
+                            builder: (_) => UserProfileScreen(id: myFollowers[index]['id'].toString(),)
+                          )
+                        );
                       },
                       child: FadedScaleAnimation(
                         CircleAvatar(
                           radius: 22,
-                          backgroundImage: AssetImage(
-                              'assets/images/profile_pics/Layer1804.png'),
+                          backgroundImage: (myFollowers[index]['image'] == null)
+                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,).image
+                          : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,).image
                         ),
                       ),
                     ),
@@ -54,7 +61,7 @@ class FollowersScreen extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                              text: followers[index]['name'],
+                              text: myFollowers[index]['name'],
                               style: theme.textTheme.subtitle2!
                                   .copyWith(fontSize: 12)),
                           TextSpan(
@@ -80,10 +87,9 @@ class FollowersScreen extends StatelessWidget {
                       aspectRatio: 1 / 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
-                        child: Image.asset(
-                          'assets/images/Layer709.png',
-                          fit: BoxFit.fitHeight,
-                        ),
+                        child: (myImageUrl.toString().isEmpty)
+                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                          : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                       ),
                     ),
                   ),

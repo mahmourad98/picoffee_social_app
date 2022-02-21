@@ -1,5 +1,6 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/profile/user_profile.dart';
@@ -9,7 +10,9 @@ import 'package:picoffee/providers/FollowingProvider.dart';
 class FollowingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var followings = Provider.of<FollowingProvider>(context, listen: true).followingUsers;
+    var myFollowings = Provider.of<FollowingProvider>(context, listen: true).followingUsers;
+    var myUser = Provider.of<UserProvider>(context, listen: true);
+    var myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
     var theme = Theme.of(context);
     return DefaultTabController(
       length: 4,
@@ -28,7 +31,7 @@ class FollowingScreen extends StatelessWidget {
           child: FadedSlideAnimation(
             ListView.builder(
               physics: BouncingScrollPhysics(),
-              itemCount: followings.length,
+              itemCount: myFollowings.length,
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
@@ -36,13 +39,14 @@ class FollowingScreen extends StatelessWidget {
                     leading: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => UserProfileScreen(id: followings[index]['id'].toString())));
+                            MaterialPageRoute(builder: (_) => UserProfileScreen(id: myFollowings[index]['id'].toString())));
                       },
                       child: FadedScaleAnimation(
                         CircleAvatar(
                           radius: 22,
-                          backgroundImage: AssetImage(
-                              'assets/images/profile_pics/Layer1804.png'),
+                          backgroundImage: (myImageUrl.toString().isEmpty)
+                            ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,).image
+                            : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,).image
                         ),
                       ),
                     ),
@@ -62,7 +66,7 @@ class FollowingScreen extends StatelessWidget {
                               style: TextStyle(
                                   color: theme.primaryColor, fontSize: 12)),
                           TextSpan(
-                              text: followings[index]['name'],
+                              text: myFollowings[index]['name'],
                               style: theme.textTheme.subtitle2!.copyWith(
                                 fontSize: 14,
                               )),
@@ -79,11 +83,10 @@ class FollowingScreen extends StatelessWidget {
                     trailing: AspectRatio(
                       aspectRatio: 1 / 1,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(7),
-                        child: Image.asset(
-                          'assets/images/Layer709.png',
-                          fit: BoxFit.fitHeight,
-                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        child: (myFollowings[index]['image'] == null)
+                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                          : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                       ),
                     ),
                   ),

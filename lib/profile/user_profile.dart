@@ -26,7 +26,9 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  bool followed = false;
+  late var followed;
+  late var myUserdata;
+  late var myUserTweets;
 
   @override
   void initState() {
@@ -35,7 +37,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
     Provider.of<ProfileProvider>(context, listen: false).getUserInfo(widget.userId);
     Provider.of<ProfileProvider>(context, listen: false).getUserTweets(widget.userId);
-    checkFollowing();
+    Provider.of<ProfileProvider>(context, listen: false).checkFollowing(widget.userId, context);
     _tabController = TabController(
       length: 2,
       vsync: this,
@@ -44,8 +46,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    var myUserdata = Provider.of<ProfileProvider>(context, listen: true).userData;
-    var myUserTweets = Provider.of<ProfileProvider>(context, listen: true).userTweets;
+    var myUser = Provider.of<ProfileProvider>(context, listen: true);
+    this.myUserdata = Provider.of<ProfileProvider>(context, listen: true).userData;
+    this.myUserTweets = Provider.of<ProfileProvider>(context, listen: true).userTweets;
+    this.followed = Provider.of<ProfileProvider>(context, listen: true).followed;
+    Provider.of<ProfileProvider>(context, listen: false).checkFollowing(widget.userId, context);
 
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
@@ -91,7 +96,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('9784', style: theme.textTheme.headline6),
+                                Text(
+                                  '${myUserdata['followersCount']}',
+                                  style: theme.textTheme.headline6
+                                ),
                                 Text(
                                   'Followers',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -101,24 +109,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 ),
                               ],
                             ),
-                            onTap: (){
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context)=>FollowersScreen())
-                              );
-                            },
+                            onTap: (){},
                           ),
                           FadedScaleAnimation(
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage:
-                                  AssetImage('assets/images/Layer710.png'),
+                              backgroundImage: ((myUserdata['imageUrl'] == null) || myUserdata['imageUrl'].isEmpty)
+                                ? Image.asset('assets/images/Layer710.png',  fit: BoxFit.cover,).image
+                                : Image.network(myUserdata['imageUrl'], fit: BoxFit.cover,).image
                             ),
                           ),
                           GestureDetector(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('3224', style: theme.textTheme.headline6),
+                                Text(
+                                  '${myUserdata['followingCount']}',
+                                  style: theme.textTheme.headline6
+                                ),
                                 Text(
                                   'Following',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -128,11 +136,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 ),
                               ],
                             ),
-                            onTap: (){
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context)=>FollowingScreen())
-                              );
-                            },
+                            onTap: (){},
                           ),
                         ],
                       ),
@@ -194,7 +198,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               child: Text(
                                 (this.followed)
                                 ? ('Unfollow Now')
-                                : ('Unfollow Now'),
+                                : ('Follow Now'),
                                 textAlign: TextAlign.center,
                                 style: theme.textTheme.subtitle2!.copyWith(
                                   color: theme.scaffoldBackgroundColor,
@@ -252,17 +256,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             ListTile(
                               contentPadding: EdgeInsets.all(0),
                               leading: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => UserProfileScreen(id: 0)));
-                                },
+                                onTap: () {},
                                 child: CircleAvatar(
-                                  backgroundImage: (myUserdata['imageUrl'] == null)
-                                    ? AssetImage('assets/images/Layer710.png')
-                                    : NetworkImage("${myUserdata['imageUrl']}") as ImageProvider,
-                                  // child: (myUserTweets[index]['imageUrl'] == null)
-                                  //     ? Image.asset('assets/images/Layer709.png')
-                                  //     : Image.network(myUserTweets[index]['imageUrl'])
+                                  backgroundImage: (myUserdata['imageUrl'].isEmpty)
+                                    ? Image.asset('assets/images/Layer710.png',  fit: BoxFit.cover,).image
+                                    : Image.network(myUserdata['imageUrl'], fit: BoxFit.cover,).image
                                 ),
                               ),
                               title: Text(
@@ -278,32 +276,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                   fontSize: 10.7,
                                 ),
                               ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Image.asset(
-                                    'assets/Icons/ic_share.png',
-                                    scale: 3,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.bookmark_border,
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.more_vert,
-                                    size: 18,
-                                  ),
-                                ],
-                              ),
                             ),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(15),
                               child: (myUserTweets[index]['imageUrl'] == null)
-                                ? Image.asset('assets/images/Layer709.png')
+                                ? Container()
                                 : Image.network(myUserTweets[index]['imageUrl'])
+                            ),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsetsDirectional.only(
+                                start: 8.0, end: 8.0
+                              ),
+                              child: Text(
+                                '${myUserTweets[index]['tweet'].toString()}',
+                                style: theme.textTheme.headline5?.copyWith(
+                                  color: ApplicationColors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 10),
@@ -313,47 +305,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                   Row(
                                     children: [
                                       Icon(
-                                        Icons.remove_red_eye,
-                                        color: ApplicationColors.grey,
-                                        size: 18.3,
-                                      ),
-                                      SizedBox(width: 7),
-                                      Text(
-                                        '1.2k',
-                                        style: TextStyle(
-                                            color: ApplicationColors.grey,
-                                            fontSize: 11.7,
-                                            letterSpacing: 1),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      FaIcon(
-                                        Icons.repeat_rounded,
-                                        color: ApplicationColors.grey,
-                                        size: 18.3,
-                                      ),
-                                      SizedBox(width: 7),
-                                      Text(
-                                        '287',
-                                        style: TextStyle(
-                                            color: ApplicationColors.grey,
-                                            fontSize: 11.7,
-                                            letterSpacing: 0.5),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
                                         Icons.chat_bubble_outline,
                                         color: ApplicationColors.grey,
                                         size: 18.3,
                                       ),
                                       SizedBox(width: 7),
                                       Text(
-                                        '287',
+                                        '${myUserTweets[index]['comments'].length}',
                                         style: TextStyle(
                                             color: ApplicationColors.grey,
                                             fontSize: 11.7,
@@ -370,7 +328,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                       ),
                                       SizedBox(width: 7),
                                       Text(
-                                        '8.2k',
+                                        '${myUserTweets[index]['comments'].length}',
                                         style: TextStyle(
                                             color: ApplicationColors.grey,
                                             fontSize: 11.7,
@@ -401,16 +359,5 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  dynamic checkFollowing(){
-    var list = Provider.of<FollowingProvider>(context, listen: false).followingUsers;
-    list.forEach(
-      (element) {
-        if (element.containsKey("id")) {
-          if (element["id"] == widget.userId) {
-            this.followed = true;
-          }
-        }
-      }
-    );
-  }
+
 }

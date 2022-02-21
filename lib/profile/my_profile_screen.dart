@@ -19,23 +19,26 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  late var image;
+  late var myImageUrl;
+  late var currentUserTweets;
+
   void initState() {
     super.initState();
     Provider.of<FollowersProvider>(context, listen: false).getFollowers();
     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
-    image = Provider.of<UserProvider>(context, listen: false).imageUrl;
+    myImageUrl = Provider.of<UserProvider>(context, listen: false).imageUrl;
     //print("getting tweets");
     Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
   }
 
   @override
   Widget build(BuildContext context) {
-    image = Provider.of<UserProvider>(context, listen: true).imageUrl;
+    var myUser = Provider.of<UserProvider>(context, listen: true);
+    this.myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
+    this.currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
+
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-    var currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
-
     final myAppBar = AppBar(
       backgroundColor: ApplicationColors.white,
       leading: IconButton(
@@ -48,7 +51,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       ),
       elevation: 0,
     );
-
     final bheight = mediaQuery.size.height -
         mediaQuery.padding.top -
         myAppBar.preferredSize.height;
@@ -78,7 +80,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('${Provider.of<FollowersProvider>(context, listen: true).followersUsers.length.toString()}', style: theme.textTheme.headline6),
+                                Text('${Provider.of<FollowersProvider>(context, listen: true).followersUsers.length.toString()}',
+                                  style: theme.textTheme.headline6
+                                ),
                                 Text(
                                   'Followers',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -90,7 +94,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             ),
                             onTap: (){
                               Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context)=>FollowersScreen())
+                                MaterialPageRoute(
+                                  builder: (context) => FollowersScreen()
+                                ),
                               );
                             },
                           ),
@@ -111,9 +117,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       shape: BoxShape.circle,
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: (image == "null")
-                                        ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
-                                        : Image.network(image, width: 128, height: 128,)
+                                    child: (myImageUrl.toString().isEmpty)
+                                      ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                                      : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                                 ),
                               ),
                             ),
@@ -122,7 +128,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('${Provider.of<FollowingProvider>(context, listen: true).followingUsers.length.toString()}', style: theme.textTheme.headline6),
+                                Text('${Provider.of<FollowingProvider>(context, listen: true).followingUsers.length.toString()}',
+                                  style: theme.textTheme.headline6
+                                ),
                                 Text(
                                   'Following',
                                   style: theme.textTheme.subtitle2!.copyWith(
@@ -134,7 +142,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             ),
                             onTap: (){
                               Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context)=>FollowingScreen())
+                                MaterialPageRoute(
+                                  builder: (context) => FollowingScreen()
+                                ),
                               );
                             },
                           ),
@@ -150,6 +160,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       style: theme.textTheme.subtitle2!.copyWith(
                         color: theme.hintColor,
                         fontSize: 12,
+                        fontWeight: FontWeight.w700
                       ),
                     ),
                     Container(
@@ -200,43 +211,24 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           ListTile(
                             contentPadding: EdgeInsets.all(0),
                             leading: CircleAvatar(
-                              backgroundImage:
-                                  AssetImage('assets/images/Layer710.png'),
+                              backgroundImage: (myImageUrl.toString().isEmpty)
+                                ? AssetImage('assets/images/Layer710.png')
+                                : Image.network(myImageUrl, width: 128, height: 128,).image
                             ),
                             title: Text(
                               '${Provider.of<UserProvider>(context, listen: true).name}',
                               style: theme.textTheme.subtitle2!.copyWith(
-                                fontSize: 13.3,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600
                               ),
                             ),
                             subtitle: Text(
-                              'Today 10:00 pm',
+                              '${currentUserTweets[index]['created_at_string'].toString()}',
                               style: theme.textTheme.subtitle2!.copyWith(
                                 color: theme.hintColor,
-                                fontSize: 11.7,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600
                               ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Image.asset(
-                                  'assets/Icons/ic_share.png',
-                                  scale: 3,
-                                ),
-                                SizedBox(width: 20),
-                                Icon(
-                                  Icons.bookmark_border,
-                                  size: 18,
-                                  color: ApplicationColors.grey,
-                                ),
-                                SizedBox(width: 20),
-                                Icon(
-                                  Icons.more_vert,
-                                  size: 18,
-                                  color: ApplicationColors.grey,
-                                ),
-                              ],
                             ),
                           ),
                           Padding(
@@ -255,7 +247,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           ),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: Image.asset('assets/images/Layer709.png'),
+                            child: (currentUserTweets[index]['image'] == null)
+                              ? Container()
+                              : Image.network(myImageUrl, width: 128, height: 128,)
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
@@ -265,34 +259,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 Row(
                                   children: [
                                     Icon(
-                                      Icons.remove_red_eye,
+                                      Icons.favorite_border,
                                       color: ApplicationColors.grey,
                                       size: 18.2,
                                     ),
                                     SizedBox(width: 8.5),
                                     Text(
-                                      '1.2k',
+                                      '${currentUserTweets[index]['comments'].length}',
                                       style: TextStyle(
                                           color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 1),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    FaIcon(
-                                      Icons.repeat_rounded,
-                                      color: ApplicationColors.grey,
-                                      size: 18.2,
-                                    ),
-                                    SizedBox(width: 8.5),
-                                    Text(
-                                      '287',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          fontSize: 11.7,
-                                          letterSpacing: 0.5),
+                                          letterSpacing: 1,
+                                          fontSize: 11.7),
                                     ),
                                   ],
                                 ),
@@ -305,27 +282,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     ),
                                     SizedBox(width: 8.5),
                                     Text(
-                                      '287',
+                                      '${currentUserTweets[index]['comments'].length}',
                                       style: TextStyle(
                                           color: ApplicationColors.grey,
                                           letterSpacing: 0.5,
-                                          fontSize: 11.7),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.favorite_border,
-                                      color: ApplicationColors.grey,
-                                      size: 18.2,
-                                    ),
-                                    SizedBox(width: 8.5),
-                                    Text(
-                                      '3.2k',
-                                      style: TextStyle(
-                                          color: ApplicationColors.grey,
-                                          letterSpacing: 1,
                                           fontSize: 11.7),
                                     ),
                                   ],

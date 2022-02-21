@@ -144,9 +144,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                               title: 'enter name and email ',
                               duration: Duration(seconds: 3));
                         } else if (passwordC.text.isEmpty ||
-                            Provider.of<UserProvider>(context, listen: false)
-                                .gender
-                                .isEmpty) {
+                            Provider.of<UserProvider>(context, listen: false).gender == null) {
                           BotToast.showSimpleNotification(
                               title: ' enter password and gender ',
                               duration: Duration(seconds: 3));
@@ -177,7 +175,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
 
   getUserToken() async {
     return await firebaseMessaging.getToken().then((value) {
-      Provider.of<UserProvider>(context, listen: false).fcmToken = value;
+      Provider.of<UserProvider>(context, listen: false).profile['fcmToken'] = value!;
     });
   }
 

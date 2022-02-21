@@ -33,9 +33,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  late var name;
-  late var email;
-  late var image;
+  late var myName;
+  late var myEmail;
+  late var myImageUrl;
   late var loggedIn;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -84,8 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
      Provider.of<FollowingProvider>(context, listen: false).getFollowing();
      Provider.of<TweetsProvider>(context, listen: false).getFollowingUsersTweets();
      Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
-     image = Provider.of<UserProvider>(context, listen: false).imageUrl;
-     print("image $image");
+     myImageUrl = Provider.of<UserProvider>(context, listen: false).imageUrl;
      loggedIn = Provider.of<UserProvider>(context, listen: false).logged_in;
     super.initState();
   }
@@ -98,13 +97,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var myUser = Provider.of<UserProvider>(context, listen: true);
+    this.myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
+    this.myEmail = Provider.of<UserProvider>(context, listen: true).email;
+    this.myName = Provider.of<UserProvider>(context, listen: true).name;
+    this.loggedIn = Provider.of<UserProvider>(context, listen: true).logged_in;
+    var myFollowingUsersTweets = Provider.of<TweetsProvider>(context, listen: true).followingUsersTweets;
+
     final mediaQuery = MediaQuery.of(context);
     final theme = Theme.of(context);
-
-    this.image = Provider.of<UserProvider>(context, listen: true).imageUrl;
-    this.loggedIn = Provider.of<UserProvider>(context, listen: true).logged_in;
-    this.name = Provider.of<UserProvider>(context, listen: true).name;
-    //print('name $name');
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         AppBar().preferredSize.height;
@@ -158,9 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       shape: BoxShape.circle,
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    // child: (image.toString().isNotEmpty)
-                                    //   ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
-                                    //   : Image.network(image, width: 128, height: 128,)
+                                    child: (myImageUrl.isEmpty)
+                                      ? Image.asset('assets/images/Layer1677.png', fit: BoxFit.cover,)
+                                      : Image.network(myImageUrl, fit: BoxFit.cover,)
                                 ),
                               ),
                             ),
@@ -172,14 +173,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             'Hey',
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
+                              fontSize: 16.0,
                             ),
                           ),
                         ),
                         Container(
                           child: Text(
-                            (Provider.of<UserProvider>(context, listen: true).name == null) ? "Null" : Provider.of<UserProvider>(context, listen: true).name!,
+                            (myName == null) ? "Null" : myName,
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold
                             ),
                           ),
                         ),
@@ -329,9 +333,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: BoxShape.circle,
                         ),
                         clipBehavior: Clip.antiAlias,
-                        // child: (image.toString().isNotEmpty)
-                        //     ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
-                        //     : Image.network(image, width: 48, height: 48,)
+                        child: (myImageUrl.isEmpty)
+                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                          : Image.network(myImageUrl, width: 48, height: 48,)
                     ),
                   ),
                 ),
@@ -349,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FadedSlideAnimation(
                 ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: Provider.of<TweetsProvider>(context).followingUsersTweets.length,
+                  itemCount: myFollowingUsersTweets.length,
                   itemBuilder: (context, index) {
                     return Card(
                       elevation: 0,
@@ -381,7 +385,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .copyWith(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                'Today 8:30 am',
+                                '${myFollowingUsersTweets[index]['created_at_string']}',
                                 style: theme.textTheme.bodyText1!.copyWith(
                                     color: ApplicationColors.textGrey,
                                     fontSize: 11),
@@ -411,7 +415,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(_followingItems[index].image),
+                                child: ((myFollowingUsersTweets[index]['image'] == null) || myFollowingUsersTweets[index]['image'].isEmpty)
+                                  ? Container()
+                                  : Image.network(myFollowingUsersTweets[index]['image'], fit: BoxFit.cover,)
                               ),
                             ),
                             Padding(
@@ -423,34 +429,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Row(
                                     children: [
                                       Icon(
-                                        Icons.remove_red_eye,
-                                        size: 18,
+                                        Icons.favorite_border,
                                         color: ApplicationColors.grey,
+                                        size: 18,
                                       ),
                                       SizedBox(width: 8.5),
                                       Text(
-                                        '1.5k',
+                                        '${myFollowingUsersTweets[index]['likes'].length}',
                                         style: TextStyle(
                                             color: ApplicationColors.grey,
                                             fontSize: 12,
                                             letterSpacing: 1),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      FaIcon(
-                                        Icons.repeat_rounded,
-                                        color: ApplicationColors.grey,
-                                        size: 18,
-                                      ),
-                                      SizedBox(width: 8.5),
-                                      Text(
-                                        '287',
-                                        style: TextStyle(
-                                            color: ApplicationColors.grey,
-                                            fontSize: 12,
-                                            letterSpacing: 0.5),
                                       ),
                                     ],
                                   ),
@@ -463,28 +452,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       SizedBox(width: 8.5),
                                       Text(
-                                        '287',
+                                        '${myFollowingUsersTweets[index]['comments'].length}',
                                         style: TextStyle(
                                             color: ApplicationColors.grey,
                                             fontSize: 12,
                                             letterSpacing: 0.5),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.favorite_border,
-                                        color: ApplicationColors.grey,
-                                        size: 18,
-                                      ),
-                                      SizedBox(width: 8.5),
-                                      Text(
-                                        '9.5k',
-                                        style: TextStyle(
-                                            color: ApplicationColors.grey,
-                                            fontSize: 12,
-                                            letterSpacing: 1),
                                       ),
                                     ],
                                   ),

@@ -19,17 +19,19 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  
+  late var image;
   void initState() {
     super.initState();
     Provider.of<FollowersProvider>(context, listen: false).getFollowers();
     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
-    print("getting tweets");
+    image = Provider.of<UserProvider>(context, listen: false).imageUrl;
+    //print("getting tweets");
     Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
   }
 
   @override
   Widget build(BuildContext context) {
+    image = Provider.of<UserProvider>(context, listen: true).imageUrl;
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     var currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
@@ -95,8 +97,25 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           FadedScaleAnimation(
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage:
-                                  AssetImage('assets/images/Layer710.png'),
+                              //backgroundImage: AssetImage('assets/images/Layer710.png'),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2
+                                    )
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: (image == "null")
+                                        ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                                        : Image.network(image, width: 128, height: 128,)
+                                ),
+                              ),
                             ),
                           ),
                           GestureDetector(

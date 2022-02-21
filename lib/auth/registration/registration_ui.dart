@@ -105,8 +105,8 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         value: 0,
                         groupValue:
                             Provider.of<MyGenderProvider>(context, listen: true).myValue,
-                        onChanged: (int? valyue) {
-                          Provider.of<MyGenderProvider>(context, listen: false)..myValue =
+                        onChanged: (valyue) {
+                          Provider.of<MyGenderProvider>(context, listen: false).myValue =
                               valyue!;
                           Provider.of<UserProvider>(context, listen: false).gender =
                               "male";
@@ -123,7 +123,7 @@ class _RegistrationUiState extends State<RegistrationUi> {
                         value: 1,
                         groupValue:
                             Provider.of<MyGenderProvider>(context, listen: false).myValue,
-                        onChanged: (int? valyue) {
+                        onChanged: (valyue) {
                           Provider.of<MyGenderProvider>(context, listen: false).myValue =
                               valyue!;
                           Provider.of<UserProvider>(context, listen: false).gender =

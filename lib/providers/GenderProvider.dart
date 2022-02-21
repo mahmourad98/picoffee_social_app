@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MyGenderProvider with ChangeNotifier {
-  var _myValue = -1;
+  int? _myValue = -1;
 
-  dynamic get myValue => _myValue;
+  get myValue => _myValue;
 
-  set myValue(dynamic value) {
+  set myValue(value) {
     _myValue = value;
     notifyListeners();
   }

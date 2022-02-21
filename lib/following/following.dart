@@ -36,7 +36,7 @@ class FollowingScreen extends StatelessWidget {
                     leading: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => UserProfileScreen()));
+                            MaterialPageRoute(builder: (_) => UserProfileScreen(id: followings[index]['id'].toString())));
                       },
                       child: FadedScaleAnimation(
                         CircleAvatar(

@@ -33,8 +33,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  late String name;
-  late String email;
+  late var name;
+  late var email;
+  late var image;
+  late var loggedIn;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -82,6 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
      Provider.of<FollowingProvider>(context, listen: false).getFollowing();
      Provider.of<TweetsProvider>(context, listen: false).getFollowingUsersTweets();
      Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+     image = Provider.of<UserProvider>(context, listen: false).imageUrl;
+     print("image $image");
+     loggedIn = Provider.of<UserProvider>(context, listen: false).logged_in;
     super.initState();
   }
 
@@ -96,13 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final mediaQuery = MediaQuery.of(context);
     final theme = Theme.of(context);
 
-    var name = Provider.of<UserProvider>(context, listen: true).name;
-    print('name $name');
+    this.image = Provider.of<UserProvider>(context, listen: true).imageUrl;
+    this.loggedIn = Provider.of<UserProvider>(context, listen: true).logged_in;
+    this.name = Provider.of<UserProvider>(context, listen: true).name;
+    //print('name $name');
     final bHeight = mediaQuery.size.height -
         mediaQuery.padding.top -
         AppBar().preferredSize.height;
 
-    var followingUsersTweets = Provider.of<TweetsProvider>(context, listen: true).followingUsersTweets;
+    //var followingUsersTweets = Provider.of<TweetsProvider>(context, listen: true).followingUsersTweets;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -137,8 +144,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           Container(
                             child: CircleAvatar(
                               radius: 35,
-                              backgroundImage:
-                                  AssetImage('assets/images/Layer1677.png'),
+                              //backgroundImage: AssetImage('assets/images/Layer707.png'),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2
+                                    )
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    // child: (image.toString().isNotEmpty)
+                                    //   ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                                    //   : Image.network(image, width: 128, height: 128,)
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -153,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Container(
                           child: Text(
-                            (name == null) ? "Null" : name,
+                            (Provider.of<UserProvider>(context, listen: true).name == null) ? "Null" : Provider.of<UserProvider>(context, listen: true).name!,
                             style: theme.textTheme.subtitle2!.copyWith(
                               color: theme.hintColor,
                             ),
@@ -291,7 +315,25 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: FadedScaleAnimation(
                 CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/Layer1677.png'),
+                  //backgroundImage: AssetImage('assets/images/Layer1677.png'),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            width: 2
+                        )
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        // child: (image.toString().isNotEmpty)
+                        //     ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                        //     : Image.network(image, width: 48, height: 48,)
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -307,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FadedSlideAnimation(
                 ListView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: followingUsersTweets.length,
+                  itemCount: Provider.of<TweetsProvider>(context).followingUsersTweets.length,
                   itemBuilder: (context, index) {
                     return Card(
                       elevation: 0,
@@ -319,16 +361,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               contentPadding: EdgeInsets.all(0),
                               leading: GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => UserProfileScreen()));
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) {
+                                        return UserProfileScreen(
+                                          id: Provider.of<TweetsProvider>(context).followingUsersTweets[index]['user']['id'].toString(),
+                                        );
+                                      }
+                                    ),
+                                  );
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage(_followingItems[index].image),
+                                 backgroundImage: AssetImage(_followingItems[index].image),
                                 ),
                               ),
                               title: Text(
-                                followingUsersTweets[index]['user']['name'],
+                                Provider.of<TweetsProvider>(context).followingUsersTweets[index]['user']['name'],
                                 style: theme.textTheme.bodyText1!
                                     .copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -344,7 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  '${followingUsersTweets[index]['tweet'].toString()}',
+                                  '${Provider.of<TweetsProvider>(context).followingUsersTweets[index]['tweet'].toString()}',
                                   style: theme.textTheme.headline5?.copyWith(
                                       color: ApplicationColors.black,
                                       fontSize: 12,
@@ -363,8 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
-                                child:
-                                    Image.asset(_followingItems[index].image),
+                                child: Image.asset(_followingItems[index].image),
                               ),
                             ),
                             Padding(

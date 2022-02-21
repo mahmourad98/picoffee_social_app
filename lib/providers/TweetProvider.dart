@@ -15,7 +15,7 @@ class TweetsProvider extends ChangeNotifier{
     currentUserTweets.clear();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var userId = prefs.getString('userId');
+    var userId = prefs.getString('id');
     var url = api.ApiUrl + this.subRoute + '/$userId';
     var token = prefs.getString('token');
 
@@ -29,7 +29,7 @@ class TweetsProvider extends ChangeNotifier{
     );
 
     var jsonResponse = convert.jsonDecode(response.body);
-    //print("the tweets of the user: $jsonResponse");
+    print("the tweets of the user: $jsonResponse");
     currentUserTweets.addAll(jsonResponse);
 
     notifyListeners();

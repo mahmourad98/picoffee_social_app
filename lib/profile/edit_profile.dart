@@ -61,13 +61,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     _radioValue = Provider.of<MyGenderProvider>(context, listen: true).myValue;
-    print("radio value: $_radioValue");
+    //print("radio value: $_radioValue");
     _pickedImage = Provider.of<MyImageProvider>(context, listen: true).myImage;
     if(_pickedImage != null){
-      print("picked image: true");
+      //print("picked image: true");
     }
     else{
-      print("picked image: false");
+      //print("picked image: false");
     }
 
     final myAppBar = AppBar(
@@ -123,6 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await _pickImage().then(
                         (value) {
                           Provider.of<MyImageProvider>(context, listen: false).myImage = value;
+                          print("image: ${Provider.of<MyImageProvider>(context, listen: false).myImage}");
                         }
                       );
                     },
@@ -272,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 value: 0,
                                 groupValue: _radioValue,
                                 onChanged: (dynamic value) {
-                                  print("male $value");
+                                  //print("male $value");
                                   Provider.of<MyGenderProvider>(context, listen: false).myValue = value;
                                 },
                                 focusColor: Colors.amberAccent,
@@ -294,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 value: 1,
                                 groupValue: _radioValue,
                                 onChanged: (dynamic value) {
-                                  print("female $value");
+                                  //print("female $value");
                                   Provider.of<MyGenderProvider>(context, listen: false).myValue = value;
                                 },
                                 focusColor: Colors.amberAccent,
@@ -377,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<dynamic> _pickImage() async{
     try {
       final ImagePicker _picker = ImagePicker();
-      XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+      var pickedImage = await _picker.pickImage(source: ImageSource.gallery);
       if(pickedImage == null) {
         return null;
       }

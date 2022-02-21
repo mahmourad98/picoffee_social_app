@@ -1,6 +1,8 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:picoffee/providers/PofileProvider.dart';
+import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/followers/followers.dart';
@@ -10,19 +12,30 @@ import 'package:picoffee/providers/FollowingProvider.dart';
 
 
 class UserProfileScreen extends StatefulWidget {
+  late final int userId;
+
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
+
+  UserProfileScreen({required dynamic id}){
+    userId = int.parse(id);
+    print("user id: $userId");
+  }
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  bool followed = false;
 
   @override
   void initState() {
     super.initState();
     Provider.of<FollowersProvider>(context, listen: false).getFollowers();
     Provider.of<FollowingProvider>(context, listen: false).getFollowing();
+    Provider.of<ProfileProvider>(context, listen: false).getUserInfo(widget.userId);
+    Provider.of<ProfileProvider>(context, listen: false).getUserTweets(widget.userId);
+    checkFollowing();
     _tabController = TabController(
       length: 2,
       vsync: this,
@@ -31,6 +44,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    var myUserdata = Provider.of<ProfileProvider>(context, listen: true).userData;
+    var myUserTweets = Provider.of<ProfileProvider>(context, listen: true).userTweets;
+
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final myAppBar = AppBar(
@@ -39,16 +55,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         onPressed: () {
           Navigator.of(context).pop();
         },
-        icon: Icon(Icons.chevron_left),
+        icon: Image.asset(
+          'assets/Icons/back_arrow_icon.png',
+        ),
       ),
       elevation: 0,
     );
+
     final bheight = mediaQuery.size.height -
         mediaQuery.padding.top -
         myAppBar.preferredSize.height;
+
     return Scaffold(
       backgroundColor: ApplicationColors.white,
-      appBar: myAppBar,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(56.0), // here the desired height
+        child: myAppBar,
+      ),
       body: FadedSlideAnimation(
         Column(
           children: [
@@ -115,11 +138,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                     ),
                     Text(
-                      'Full Name',
+                      myUserdata['name'].toString(),
                       style: theme.textTheme.headline6,
                     ),
                     Text(
-                      '@username',
+                      myUserdata['email'].toString(),
                       style: theme.textTheme.subtitle2!.copyWith(
                         color: theme.hintColor,
                         fontSize: 12,
@@ -155,7 +178,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Provider.of<ProfileProvider>(context, listen: false).followUser(widget.userId);
+                            },
                             child: Container(
                               width: constraints.maxWidth * 0.35,
                               decoration: BoxDecoration(
@@ -167,7 +192,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                   color: theme.primaryColor),
                               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                               child: Text(
-                                'Follow Now',
+                                (this.followed)
+                                ? ('Unfollow Now')
+                                : ('Unfollow Now'),
                                 textAlign: TextAlign.center,
                                 style: theme.textTheme.subtitle2!.copyWith(
                                   color: theme.scaffoldBackgroundColor,
@@ -214,7 +241,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               child: Container(
                 //height: bheight * 0.6,
                 child: ListView.builder(
-                  itemCount: 2,
+                  itemCount: myUserTweets.length,
                   itemBuilder: (context, index) {
                     return Card(
                       elevation: 0,
@@ -227,15 +254,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               leading: GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => UserProfileScreen()));
+                                      builder: (_) => UserProfileScreen(id: 0)));
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage:
-                                  AssetImage('assets/images/Layer710.png'),
+                                  backgroundImage: (myUserdata['imageUrl'] == null)
+                                    ? AssetImage('assets/images/Layer710.png')
+                                    : NetworkImage("${myUserdata['imageUrl']}") as ImageProvider,
+                                  // child: (myUserTweets[index]['imageUrl'] == null)
+                                  //     ? Image.asset('assets/images/Layer709.png')
+                                  //     : Image.network(myUserTweets[index]['imageUrl'])
                                 ),
                               ),
                               title: Text(
-                                'Full Name',
+                                myUserdata['name'].toString(),
                                 style: theme.textTheme.subtitle2!.copyWith(
                                   fontSize: 13.3,
                                 ),
@@ -270,7 +301,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             ),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(15),
-                              child: Image.asset('assets/images/Layer709.png'),
+                              child: (myUserTweets[index]['imageUrl'] == null)
+                                ? Image.asset('assets/images/Layer709.png')
+                                : Image.network(myUserTweets[index]['imageUrl'])
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 10),
@@ -365,6 +398,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         endOffset: Offset(0, 0),
         slideCurve: Curves.linearToEaseOut,
       ),
+    );
+  }
+
+  dynamic checkFollowing(){
+    var list = Provider.of<FollowingProvider>(context, listen: false).followingUsers;
+    list.forEach(
+      (element) {
+        if (element.containsKey("id")) {
+          if (element["id"] == widget.userId) {
+            this.followed = true;
+          }
+        }
+      }
     );
   }
 }

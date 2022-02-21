@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:picoffee/providers/ImageProvider.dart';
+import 'package:picoffee/providers/PofileProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:picoffee/app_theme/app_theme.dart';
@@ -19,6 +22,7 @@ import 'package:picoffee/topTweets/topTweets.dart';
 import 'auth/login/login_ui.dart';
 
 void main()async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp app = await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,6 +51,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_)=>FollowingProvider()),
         ChangeNotifierProvider(create: (_)=>TweetsProvider()),
         ChangeNotifierProvider(create: (_)=>MyImageProvider()),
+        ChangeNotifierProvider(create: (_)=>ProfileProvider()),
       ],
       child: MaterialApp(
         builder: BotToastInit(),
@@ -56,5 +61,13 @@ class MyApp extends StatelessWidget {
         home:(logged_in == false) ? TopTweetsScreen() :  HomeScreen(),
       ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }

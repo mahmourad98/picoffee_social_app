@@ -282,7 +282,8 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      UserProfileScreen()));
+                                                      UserProfileScreen(id: Provider.of<TopTweets>(context, listen: true)
+                                                          .topTweets[index]['user_id'].toString(),)));
                                         },
                                         child: CircleAvatar(
                                           backgroundImage: AssetImage(
@@ -396,7 +397,10 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      UserProfileScreen()));
+                                                      UserProfileScreen(
+                                                        id: Provider.of<TopTweets>(context, listen: true)
+                                                          .topTweets[index]['user_id'].toString(),
+                                                      )));
                                         },
                                         child: CircleAvatar(
                                           backgroundImage: AssetImage(

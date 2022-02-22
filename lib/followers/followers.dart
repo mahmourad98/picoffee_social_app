@@ -1,5 +1,6 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:picoffee/app_config/app_config.dart';
 import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -13,6 +14,7 @@ class FollowersScreen extends StatelessWidget {
     var myFollowers = Provider.of<FollowersProvider>(context, listen: true).followersUsers;
     var myUser = Provider.of<UserProvider>(context, listen: true);
     var myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
+    print("myImageUrl $myImageUrl");
     var theme = Theme.of(context);
     return DefaultTabController(
       length: 4,
@@ -48,8 +50,8 @@ class FollowersScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 22,
                           backgroundImage: (myFollowers[index]['image'] == null)
-                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,).image
-                          : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,).image
+                          ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128, fit: BoxFit.cover,).image
+                          : Image.network('${AppConfig.profilePicturesUrl}${myFollowers[index]['image']['picture_name']}', width: 128, height: 128, fit: BoxFit.cover,).image
                         ),
                       ),
                     ),
@@ -88,7 +90,7 @@ class FollowersScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
                         child: (myImageUrl.toString().isEmpty)
-                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                          ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128, fit: BoxFit.cover,)
                           : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                       ),
                     ),

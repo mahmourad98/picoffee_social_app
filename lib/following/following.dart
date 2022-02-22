@@ -1,5 +1,6 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:picoffee/app_config/app_config.dart';
 import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -45,7 +46,7 @@ class FollowingScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 22,
                           backgroundImage: (myImageUrl.toString().isEmpty)
-                            ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,).image
+                            ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128, fit: BoxFit.cover,).image
                             : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,).image
                         ),
                       ),
@@ -85,8 +86,8 @@ class FollowingScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: (myFollowings[index]['image'] == null)
-                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
-                          : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
+                          ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,)
+                          : Image.network('${AppConfig.profilePicturesUrl}${myFollowings[index]['image']['picture_name']}', width: 128, height: 128, fit: BoxFit.cover,)
                       ),
                     ),
                   ),

@@ -25,7 +25,7 @@ class FollowingProvider extends ChangeNotifier{
     );
 
     var jsonResponse = convert.jsonDecode(response.body);
-    print("the following: $jsonResponse");
+    //print("the following: $jsonResponse");
     followingUsers.addAll(jsonResponse);
     notifyListeners();
   }

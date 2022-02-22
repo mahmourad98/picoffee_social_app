@@ -1,6 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:picoffee/app_config/app_config.dart';
 import 'package:picoffee/providers/PofileProvider.dart';
 import 'package:picoffee/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Provider.of<ProfileProvider>(context, listen: false).getUserTweets(widget.userId);
     Provider.of<ProfileProvider>(context, listen: false).checkFollowing(widget.userId, context);
     _tabController = TabController(
-      length: 2,
+      length: 1,
       vsync: this,
     );
   }
@@ -114,9 +115,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           FadedScaleAnimation(
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage: ((myUserdata['imageUrl'] == null) || myUserdata['imageUrl'].isEmpty)
-                                ? Image.asset('assets/images/Layer710.png',  fit: BoxFit.cover,).image
-                                : Image.network(myUserdata['imageUrl'], fit: BoxFit.cover,).image
+                              //backgroundImage: AssetImage('assets/images/Layer710.png'),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2
+                                    )
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: (myUserdata['imageUrl'] == null)
+                                    ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,)
+                                    : Image.network('${myUserdata['imageUrl']}', width: 128, height: 128, fit: BoxFit.cover,)
+                                ),
+                              ),
                             ),
                           ),
                           GestureDetector(
@@ -159,28 +176,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              width: constraints.maxWidth * 0.35,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: theme.primaryColor,
-                                      style: BorderStyle.solid,
-                                      width: 1),
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: ApplicationColors.white),
-                              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              child: Text(
-                                'Message',
-                                style: theme.textTheme.subtitle2!.copyWith(
-                                  color: theme.primaryColor,
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
                           GestureDetector(
                             onTap: () {
                               Provider.of<ProfileProvider>(context, listen: false).followUser(widget.userId);
@@ -226,10 +221,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 style: theme.textTheme.bodyText1,
                               ),
                             ),
-                            Text(
-                              'Stories',
-                              style: theme.textTheme.bodyText1,
-                            ),
                           ],
                         ),
                       ),
@@ -258,9 +249,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               leading: GestureDetector(
                                 onTap: () {},
                                 child: CircleAvatar(
-                                  backgroundImage: (myUserdata['imageUrl'].isEmpty)
-                                    ? Image.asset('assets/images/Layer710.png',  fit: BoxFit.cover,).image
-                                    : Image.network(myUserdata['imageUrl'], fit: BoxFit.cover,).image
+                                 backgroundImage: Image.network(myUserdata['imageUrl'], fit: BoxFit.cover,).image
                                 ),
                               ),
                               title: Text(
@@ -270,7 +259,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 ),
                               ),
                               subtitle: Text(
-                                'Today 10:00 pm',
+                                '${myUserTweets[index]['createdAt']}',
                                 style: theme.textTheme.subtitle2!.copyWith(
                                   color: theme.hintColor,
                                   fontSize: 10.7,
@@ -286,7 +275,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             Container(
                               alignment: Alignment.centerLeft,
                               padding: EdgeInsetsDirectional.only(
-                                start: 8.0, end: 8.0
+                                  start: 8.0, end: 8.0
                               ),
                               child: Text(
                                 '${myUserTweets[index]['tweet'].toString()}',

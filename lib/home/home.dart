@@ -159,9 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       shape: BoxShape.circle,
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: (myImageUrl.isEmpty)
-                                      ? Image.asset('assets/images/Layer1677.png', fit: BoxFit.cover,)
-                                      : Image.network(myImageUrl, fit: BoxFit.cover,)
+                                    child: (myImageUrl == null || myImageUrl.isEmpty)
+                                        ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', fit: BoxFit.cover, width: 128, height: 128,)
+                                        : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                                 ),
                               ),
                             ),
@@ -333,9 +333,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: BoxShape.circle,
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: (myImageUrl.isEmpty)
-                          ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
-                          : Image.network(myImageUrl, width: 48, height: 48,)
+                        child: (myImageUrl == null || myImageUrl.isEmpty)
+                          ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', fit: BoxFit.cover, width: 48, height: 48,)
+                          : Image.network(myImageUrl, width: 48, fit: BoxFit.cover, height: 48,)
                     ),
                   ),
                 ),
@@ -376,7 +376,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 child: CircleAvatar(
-                                 backgroundImage: AssetImage(_followingItems[index].image),
+                                 backgroundImage: (Provider.of<TweetsProvider>(context,).followingUsersTweets[index]['user']['image'] == null)
+                                     ? Image.network('${AppConfig.profilePicturesUrl}avatar.png').image
+                                     : Image.network('${AppConfig.profilePicturesUrl}${Provider.of<TweetsProvider>(context).followingUsersTweets[index]['user']['image']['picture_name']}').image
                                 ),
                               ),
                               title: Text(

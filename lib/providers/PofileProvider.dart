@@ -16,27 +16,30 @@ class ProfileProvider with ChangeNotifier {
   dynamic getUserInfo(dynamic id) async {
     userData.clear();
     var url = api.ApiUrl + "v1/users/" + id.toString();
+    //print("url = $url");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token')!;
+    //print("token = $token");
     var response = await http.get(
       Uri.parse(url),
-        headers: <String, String>{
-          //'Content-Type': 'application/json',
-          //'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        }
+      headers: <String, String>{
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      }
     );
 
+    //print("response = ${response.statusCode}");
     Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
     //print("profile provider data: $data");
     userData['name'] = data['data']['attributes']['name'].toString();
     userData['email'] = data['data']['attributes']['email'].toString();
     if(data['data']['attributes']['image'] != null){
-      var _imageUrl = AppConfig.postsPicturesUrl + data['data']['attributes']['image']['picture_name'].toString();
+      var _imageUrl = AppConfig.profilePicturesUrl + data['data']['attributes']['image']['picture_name'].toString();
       userData['imageUrl'] = _imageUrl;
     }
     else{
-      userData['imageUrl'] = "";
+      userData['imageUrl'] = "${AppConfig.profilePicturesUrl}avatar.png";
     }
     userData['gender'] = data['data']['attributes']['profile']['gender'].toString();
     userData['fcmToken'] = data['data']['attributes']['profile']['fcm_token'].toString();
@@ -69,10 +72,11 @@ class ProfileProvider with ChangeNotifier {
         'tweet' : data[i]['tweet'],
         'comments' : data[i]['comments'],
         'imageUrl' : data[i]['image'],
+        'createdAt' : data[i]['created_at_string'],
       };
       userTweets.add(map);
     }
-    print('user tweets: $userTweets');
+    //print('user tweets: $userTweets');
 
     notifyListeners();
   }
@@ -97,7 +101,7 @@ class ProfileProvider with ChangeNotifier {
     );
 
     var data = response.body;
-    print('response: $data');
+    //print('response: $data');
 
     if(data.contains('follow')){
       this.followed = true;
@@ -116,7 +120,7 @@ class ProfileProvider with ChangeNotifier {
         if (element.containsKey("id")) {
           if (element["id"] == id) {
             Provider.of<ProfileProvider>(buildContext, listen: false).followed = true;
-            print("followed: ${this.followed}");
+            //print("followed: ${this.followed}");
           }
         }
       }

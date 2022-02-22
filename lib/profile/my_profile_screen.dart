@@ -1,6 +1,7 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:picoffee/app_config/app_config.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -118,7 +119,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: (myImageUrl.toString().isEmpty)
-                                      ? Image.asset('assets/images/Layer1677.png', width: 128, height: 128,)
+                                      ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,)
                                       : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                                 ),
                               ),
@@ -212,7 +213,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             contentPadding: EdgeInsets.all(0),
                             leading: CircleAvatar(
                               backgroundImage: (myImageUrl.toString().isEmpty)
-                                ? AssetImage('assets/images/Layer710.png')
+                                ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,).image
                                 : Image.network(myImageUrl, width: 128, height: 128,).image
                             ),
                             title: Text(

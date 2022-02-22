@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+
 class AppConfig {
   static final String appName = 'ShareWorld';
   static final String packageName = '<package_name>';
@@ -16,4 +18,16 @@ class AppConfig {
   static final String profilePicturesUrl = 'http://dev.eyad-web-development.com/storage/users/';
 
   static final String postsPicturesUrl = 'http://dev.eyad-web-development.com/storage/posts/';
+}
+
+extension IsOk on http.Response {
+  bool get ok {
+    return (statusCode ~/ 100) == 2;
+  }
+}
+
+extension IsOk2 on http.StreamedResponse {
+  bool get ok {
+    return (statusCode ~/ 100) == 2;
+  }
 }

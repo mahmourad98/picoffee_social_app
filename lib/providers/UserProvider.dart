@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -17,6 +18,7 @@ class UserProvider with ChangeNotifier {
   //String gender = ' ';
   String? gender;
   String imageUrl = '';
+  bool showProgressBar = false;
 
   var token;
   var logged_in;
@@ -38,30 +40,37 @@ class UserProvider with ChangeNotifier {
       'gender': gender,
       'fcm_token': profile['fcmToken'].toString()
     });
-    //print("response = ${response.body}");
-    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('id', data['user']['id'].toString());
-    await prefs.setString('name', data['user']['name']);
-    await prefs.setString('email', data['user']['email']);
-    //no image in sign up
-    if(data['user']['image'] != null){
-      var _imageUrl = AppConfig.profilePicturesUrl + data['user']['image']['picture_name'].toString();
-      await prefs.setString('image', _imageUrl);
+    if(response.ok){
+      //print("response = ${response.body}");
+      Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('id', data['user']['id'].toString());
+      await prefs.setString('name', data['user']['name']);
+      await prefs.setString('email', data['user']['email']);
+      //no image in sign up
+      if(data['user']['image'] != null){
+        var _imageUrl = AppConfig.profilePicturesUrl + data['user']['image']['picture_name'].toString();
+        await prefs.setString('image', _imageUrl);
+      }
+      else{
+        await prefs.setString('image', "");
+      }
+      await prefs.setString('profileId', data['user']['profile']['id'].toString());
+      await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+      await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
+      await prefs.setString('token', data['token'].toString());
+      await prefs.setBool('logged_in', true);
+
+      await getUserInfo();
+      notifyListeners();
     }
-    else{
-      await prefs.setString('image', "");
+    else {
+      BotToast.showSimpleNotification(title: "Register Was Unsuccessful");
+      return false;
     }
-    await prefs.setString('profileId', data['user']['profile']['id'].toString());
-    await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
-    await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
-    await prefs.setString('token', data['token'].toString());
-    await prefs.setBool('logged_in', true);
 
-    await getUserInfo();
-
-    notifyListeners();
   }
 
   Future<dynamic> signIn(email, password,) async {
@@ -73,29 +82,36 @@ class UserProvider with ChangeNotifier {
       'device_name': deviceName,
     });
 
-    //print("response = ${response.body}");
-    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
+    if(response.ok){
+      //print("response = ${response.body}");
+      Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('id', data['user']['id'].toString());
-    await prefs.setString('name', data['user']['name'].toString());
-    await prefs.setString('email', data['user']['email'].toString());
-    if(data['user']['image'] != null){
-      var _imageUrl = AppConfig.profilePicturesUrl + data['user']['image']['picture_name'].toString();
-      await prefs.setString('image', _imageUrl);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('id', data['user']['id'].toString());
+      await prefs.setString('name', data['user']['name'].toString());
+      await prefs.setString('email', data['user']['email'].toString());
+      if(data['user']['image'] != null){
+        var _imageUrl = AppConfig.profilePicturesUrl + data['user']['image']['picture_name'].toString();
+        await prefs.setString('image', _imageUrl);
+      }
+      else{
+        await prefs.setString('image', "");
+      }
+      await prefs.setString('profileId', data['user']['profile']['id'].toString());
+      await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
+      await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
+      await prefs.setString('token', data['token'].toString());
+      await prefs.setBool('logged_in', true);
+
+      await getUserInfo();
+      notifyListeners();
+
+      return true;
     }
-    else{
-      await prefs.setString('image', "");
+    else {
+     BotToast.showSimpleNotification(title: "Login Was Unsuccessful");
+     return false;
     }
-    await prefs.setString('profileId', data['user']['profile']['id'].toString());
-    await prefs.setString('profileGender', data['user']['profile']['gender'].toString());
-    await prefs.setString('profileFcmToken', data['user']['profile']['fcm_token'].toString());
-    await prefs.setString('token', data['token'].toString());
-    await prefs.setBool('logged_in', true);
-
-    await getUserInfo();
-
-    notifyListeners();
   }
 
   Future<dynamic> getUserInfo() async{
@@ -125,6 +141,8 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<dynamic> updateUserInfo(dynamic email, dynamic name, dynamic gender, dynamic image) async{
+    this.showProgressBar = !(this.showProgressBar);
+    notifyListeners();
     var url = api.ApiUrl + "v1/users/update/${this.id}";
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -147,26 +165,38 @@ class UserProvider with ChangeNotifier {
     var responseData = await response.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
 
-    //print("response = $responseString");
-    Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(responseString));
+    await Future.delayed(Duration(milliseconds: 1000));
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('id', data['data']['id'].toString());
-    await prefs.setString('name', data['data']['attributes']['name'].toString());
-    await prefs.setString('email', data['data']['attributes']['email'].toString());
-    if(data['data']['attributes']['image'] != null){
-      var _imageUrl = AppConfig.profilePicturesUrl + data['data']['attributes']['image']['picture_name'].toString();
-      await prefs.setString('image', _imageUrl);
+    if(response.ok){
+      //print("response = $responseString");
+      Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(responseString));
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('id', data['data']['id'].toString());
+      await prefs.setString('name', data['data']['attributes']['name'].toString());
+      await prefs.setString('email', data['data']['attributes']['email'].toString());
+      if(data['data']['attributes']['image'] != null){
+        var _imageUrl = AppConfig.profilePicturesUrl + data['data']['attributes']['image']['picture_name'].toString();
+        await prefs.setString('image', _imageUrl);
+      }
+      else{
+        await prefs.setString('image', "");
+      }
+      await prefs.setString('profileId', data['data']['attributes']['profile']['id'].toString());
+      await prefs.setString('profileGender', data['data']['attributes']['profile']['gender'].toString());
+      await prefs.setString('profileFcmToken', data['data']['attributes']['profile']['fcm_token'].toString());
+
+      await getUserInfo();
+      this.showProgressBar = !(this.showProgressBar);
+      notifyListeners();
+
+      return true;
     }
-    else{
-      await prefs.setString('image', "");
+    else {
+      this.showProgressBar = !(this.showProgressBar);
+      notifyListeners();
+      BotToast.showSimpleNotification(title: "Login Was Unsuccessful");
+      return false;
     }
-    await prefs.setString('profileId', data['data']['attributes']['profile']['id'].toString());
-    await prefs.setString('profileGender', data['data']['attributes']['profile']['gender'].toString());
-    await prefs.setString('profileFcmToken', data['data']['attributes']['profile']['fcm_token'].toString());
-
-    await getUserInfo();
-
-    notifyListeners();
   }
 }

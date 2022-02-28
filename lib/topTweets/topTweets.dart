@@ -424,7 +424,7 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                                               context,
                                                               MaterialPageRoute(
                                                                   builder: (cx) =>
-                                                                      RegistrationUi()))
+                                                                      LoginUi()))
                                                           : Navigator.pushReplacement(
                                                               context,
                                                               MaterialPageRoute(

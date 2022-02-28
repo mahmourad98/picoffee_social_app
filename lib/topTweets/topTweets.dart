@@ -1,63 +1,25 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_config/app_config.dart';
 import 'package:picoffee/auth/login/login_ui.dart';
 import 'package:picoffee/auth/registration/registration_ui.dart';
-import 'package:picoffee/comments/comments.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
-import 'package:picoffee/profile/edit_profile.dart';
-import 'package:picoffee/profile/my_profile_screen.dart';
-import 'package:picoffee/profile/user_profile.dart';
 import 'package:picoffee/providers/TopTweetProvider.dart';
-
-class FollowingItems {
-  String image;
-  String name;
-
-  FollowingItems(this.image, this.name);
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TopTweetsScreen extends StatefulWidget {
-  @override
   _TopTweetsScreenState createState() => _TopTweetsScreenState();
 }
 
 class _TopTweetsScreenState extends State<TopTweetsScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<FollowingItems> _followingItems = [
-    FollowingItems('assets/images/Layer707.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer709.png', 'Harshu Makkar'),
-    FollowingItems('assets/images/Layer948.png', 'Mrs. White'),
-    FollowingItems('assets/images/Layer884.png', 'Marie Black'),
-    FollowingItems('assets/images/Layer915.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer946.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer948.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer949.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer950.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer915.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer946.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer948.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer949.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer950.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer946.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer948.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer949.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer950.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer915.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer946.png', 'Emili Williamson'),
-    FollowingItems('assets/images/Layer948.png', 'Emili Williamson'),
-  ];
-
   @override
   void initState() {
     Provider.of<TopTweets>(context, listen: false).getTopTweets();
     super.initState();
   }
-
-  bool check = false;
 
   @override
   Widget build(BuildContext context) {
@@ -277,18 +239,12 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                   children: [
                                     ListTile(
                                       contentPadding: EdgeInsets.all(0),
-                                      leading: GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      UserProfileScreen(id: Provider.of<TopTweets>(context, listen: true)
-                                                          .topTweets[index]['user_id'].toString(),)));
-                                        },
-                                        child: CircleAvatar(
-                                          backgroundImage: AssetImage(
-                                              _followingItems[index].image),
-                                        ),
+                                      leading: CircleAvatar(
+                                        backgroundImage: AssetImage(
+                                            ('${Provider.of<TopTweets>(context, listen: true).topTweets[index]['image']}') !=
+                                                    null
+                                                ? "loading"
+                                                : "emptysss"),
                                       ),
                                       title: Text(
                                         '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['user']['name']}',
@@ -305,40 +261,22 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                                 fontSize: 11),
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CommentScreen(
-                                                      comm: Provider.of<
-                                                          TopTweets>(
-                                                          context,
-                                                          listen: true)
-                                                          .topTweets[index]
-                                                      ['comments'],
-                                                      indexuserTweet: index,
-                                                    )));
-                                      },
-                                      child: Container(
-                                        width: 300,
-                                        // color: Colors.teal,
-                                        child: ListTile(
-                                          contentPadding:
-                                              EdgeInsets.only(bottom: 5),
-                                          title: Text(
-                                              '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['tweet']}'),
-                                        ),
+                                    Container(
+                                      width: 300,
+                                      // color: Colors.teal,
+                                      child: ListTile(
+                                        contentPadding:
+                                            EdgeInsets.only(bottom: 5),
+                                        title: Text(
+                                            '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['tweet']}'),
                                       ),
                                     ),
-
                                     Padding(
                                       padding: const EdgeInsets.only(top: 10),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
-
                                           Row(
                                             children: [
                                               Icon(
@@ -359,17 +297,36 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.chat_bubble_outline,
-                                                color: ApplicationColors.grey,
-                                                size: 18,
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  SharedPreferences prefs =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  prefs.getString('token') !=
+                                                          null
+                                                      ? Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (cx) =>
+                                                                  RegistrationUi()))
+                                                      : Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (cx) =>
+                                                                  RegistrationUi()));
+                                                },
+                                                child: Icon(
+                                                  Icons.chat_bubble_outline,
+                                                  color: ApplicationColors.grey,
+                                                  size: 18,
+                                                ),
                                               ),
                                               SizedBox(width: 8.5),
                                               Text(
                                                 '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['comments'].length}',
                                                 style: TextStyle(
                                                     color:
-                                                    ApplicationColors.grey,
+                                                        ApplicationColors.grey,
                                                     fontSize: 12,
                                                     letterSpacing: 0.5),
                                               ),
@@ -382,123 +339,124 @@ class _TopTweetsScreenState extends State<TopTweetsScreen> {
                                 ),
                               ),
                             )
-                          :Provider.of<TopTweets>(context, listen: true)
-                          .topTweets[index]['image'] ==
-                          null ? Card(
-                              elevation: 0,
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    ListTile(
-                                      contentPadding: EdgeInsets.all(0),
-                                      leading: GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      UserProfileScreen(
-                                                        id: Provider.of<TopTweets>(context, listen: true)
-                                                          .topTweets[index]['user_id'].toString(),
-                                                      )));
-                                        },
-                                        child: CircleAvatar(
-                                          backgroundImage: AssetImage(
-                                              _followingItems[index].image),
+                          : Provider.of<TopTweets>(context, listen: true)
+                                      .topTweets[index]['image'] ==
+                                  null
+                              ? Card(
+                                  elevation: 0,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          contentPadding: EdgeInsets.all(0),
+                                          leading: CircleAvatar(
+                                            backgroundImage: AssetImage(
+                                                ('${Provider.of<TopTweets>(context, listen: true).topTweets[index]['image']}') !=
+                                                        null
+                                                    ? "loading"
+                                                    : "emptysss"),
+                                          ),
+                                          title: Text(
+                                            '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['user']['name']}',
+                                            style: theme.textTheme.bodyText1!
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                          subtitle: Text(
+                                            ' ${Provider.of<TopTweets>(context, listen: true).topTweets[index]['created_at_string']}',
+                                            style: theme.textTheme.bodyText1!
+                                                .copyWith(
+                                                    color: ApplicationColors
+                                                        .textGrey,
+                                                    fontSize: 11),
+                                          ),
                                         ),
-                                      ),
-                                      title: Text(
-                                        '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['user']['name']}',
-                                        style: theme.textTheme.bodyText1!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold),
-                                      ),
-                                      subtitle: Text(
-                                        ' ${Provider.of<TopTweets>(context, listen: true).topTweets[index]['created_at_string']}',
-                                        style: theme.textTheme.bodyText1!
-                                            .copyWith(
-                                                color:
-                                                    ApplicationColors.textGrey,
-                                                fontSize: 11),
-                                      ),
-                                    ),
-                                    Container(
-                                        child: ListTile(
-                                      contentPadding:
-                                          EdgeInsets.only(bottom: 5),
-                                      title: Text(
-                                          '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['tweet']}'),
-                                    )),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CommentScreen(
-                                                      comm: Provider.of<
-                                                                      TopTweets>(
-                                                                  context,
-                                                                  listen: true)
-                                                              .topTweets[index]
-                                                          ['comments'],
-                                                      indexuserTweet: index,
-                                                    )));
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: Image.asset(
-                                            _followingItems[index].image),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Row(
+                                        Container(
+                                            child: ListTile(
+                                          contentPadding:
+                                              EdgeInsets.only(bottom: 5),
+                                          title: Text(
+                                              '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['tweet']}'),
+                                        )),
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              Icon(
-                                                Icons.favorite_border,
-                                                color: ApplicationColors.grey,
-                                                size: 18,
-                                              ),
-                                              SizedBox(width: 8.5),
-                                              Text(
-                                                '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['likes_count']}',
-                                                style: TextStyle(
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.favorite_border,
                                                     color:
-                                                    ApplicationColors.grey,
-                                                    fontSize: 12,
-                                                    letterSpacing: 1),
+                                                        ApplicationColors.grey,
+                                                    size: 18,
+                                                  ),
+                                                  SizedBox(width: 8.5),
+                                                  Text(
+                                                    '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['likes_count']}',
+                                                    style: TextStyle(
+                                                        color: ApplicationColors
+                                                            .grey,
+                                                        fontSize: 12,
+                                                        letterSpacing: 1),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      SharedPreferences prefs =
+                                                          await SharedPreferences
+                                                              .getInstance();
+                                                      prefs.getString(
+                                                                  'token') !=
+                                                              null
+                                                          ? Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (cx) =>
+                                                                      LoginUi()))
+                                                          : Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (cx) =>
+                                                                      RegistrationUi()));
+                                                    },
+                                                    child: Icon(
+                                                      Icons.chat_bubble_outline,
+                                                      color: ApplicationColors
+                                                          .grey,
+                                                      size: 18,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8.5),
+                                                  Text(
+                                                    '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['comments'].length}',
+                                                    style: TextStyle(
+                                                        color: ApplicationColors
+                                                            .grey,
+                                                        fontSize: 12,
+                                                        letterSpacing: 0.5),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.chat_bubble_outline,
-                                                color: ApplicationColors.grey,
-                                                size: 18,
-                                              ),
-                                              SizedBox(width: 8.5),
-                                              Text(
-                                                '${Provider.of<TopTweets>(context, listen: true).topTweets[index]['comments'].length}',
-                                                style: TextStyle(
-                                                    color:
-                                                    ApplicationColors.grey,
-                                                    fontSize: 12,
-                                                    letterSpacing: 0.5),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ):Container();
+                                  ),
+                                )
+                              : Container();
                     },
                   ),
                   beginOffset: Offset(0, 0.3),

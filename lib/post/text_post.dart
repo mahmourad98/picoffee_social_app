@@ -1,7 +1,12 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
+import 'package:picoffee/home/home.dart';
+import 'package:picoffee/providers/ImageProvider.dart';
+import 'package:picoffee/providers/TweetProvider.dart';
+import 'package:provider/provider.dart';
 
 
 class TextPostScreen extends StatefulWidget {
@@ -10,10 +15,26 @@ class TextPostScreen extends StatefulWidget {
 }
 
 class _TextPostScreenState extends State<TextPostScreen> {
+
+  void initState() {
+
+    Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController.text);
+
+    super.initState();
+  }
+
+
+  TextEditingController tweetTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
+
+
+
+
+
     final myAppbar = AppBar(
       backgroundColor: ApplicationColors.white,
       elevation: 0,
@@ -56,6 +77,7 @@ class _TextPostScreenState extends State<TextPostScreen> {
                         border: InputBorder.none,
                         hintText: 'Write something to post',
                       ),
+                      controller: tweetTextController,
                       // style: theme.textTheme.bodyText1.copyWith(color: Colors.grey),
                     ),
                   ),
@@ -92,18 +114,36 @@ class _TextPostScreenState extends State<TextPostScreen> {
                     ),
                     padding: EdgeInsets.all(10),
                     margin: EdgeInsets.fromLTRB(5, 0, 10, 5),
-                    child: Icon(
-                      Icons.photo,
-                      color: theme.primaryColor,
+                    child: GestureDetector(
+                      child: Icon(
+                        Icons.photo,
+                        color: theme.primaryColor,
+                      ),
+                      onTap: () async{
+
+                      },
                     ),
                   ),
                 ],
               ),
 
               GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                onTap: ()async {
+                  if (tweetTextController.text.isEmpty ) {
+                    BotToast.showSimpleNotification(
+                        title: 'Cant post an Empty tweet ',
+                        duration: Duration(seconds: 3));
+                  }
+                  else{
+                      await Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController);
+
+                      BotToast.showSimpleNotification(
+                          title: 'Tweet posted successfully',
+                          duration: Duration(seconds: 3));
+
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+    }
+
                 },
                 child: Container(
                   margin: EdgeInsets.only(top: 15),

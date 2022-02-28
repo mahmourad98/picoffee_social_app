@@ -1,4 +1,5 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:picoffee/app_config/app_config.dart';
@@ -59,8 +60,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     return Scaffold(
       backgroundColor: ApplicationColors.white,
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(56.0), // here the desired height
-          child: myAppBar,
+        preferredSize: Size.fromHeight(56.0), // here the desired height
+        child: myAppBar,
       ),
       body: FadedSlideAnimation(
         Column(
@@ -82,7 +83,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text('${Provider.of<FollowersProvider>(context, listen: true).followersUsers.length.toString()}',
-                                  style: theme.textTheme.headline6
+                                    style: theme.textTheme.headline6
                                 ),
                                 Text(
                                   'Followers',
@@ -96,7 +97,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             onTap: (){
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => FollowersScreen()
+                                    builder: (context) => FollowersScreen()
                                 ),
                               );
                             },
@@ -119,8 +120,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: (myImageUrl.toString().isEmpty)
-                                      ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,)
-                                      : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
+                                        ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,)
+                                        : Image.network(myImageUrl, width: 128, height: 128, fit: BoxFit.cover,)
                                 ),
                               ),
                             ),
@@ -130,7 +131,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text('${Provider.of<FollowingProvider>(context, listen: true).followingUsers.length.toString()}',
-                                  style: theme.textTheme.headline6
+                                    style: theme.textTheme.headline6
                                 ),
                                 Text(
                                   'Following',
@@ -144,7 +145,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             onTap: (){
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => FollowingScreen()
+                                    builder: (context) => FollowingScreen()
                                 ),
                               );
                             },
@@ -159,9 +160,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     Text(
                       '${Provider.of<UserProvider>(context, listen: true).email}',
                       style: theme.textTheme.subtitle2!.copyWith(
-                        color: theme.hintColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700
+                          color: theme.hintColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700
                       ),
                     ),
                     Container(
@@ -183,9 +184,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             'Edit Profile',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.subtitle2!.copyWith(
-                              color: theme.scaffoldBackgroundColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold
+                                color: theme.scaffoldBackgroundColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold
                             ),
                           ),
                         ),
@@ -212,23 +213,23 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           ListTile(
                             contentPadding: EdgeInsets.all(0),
                             leading: CircleAvatar(
-                              backgroundImage: (myImageUrl.toString().isEmpty)
-                                ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,).image
-                                : Image.network(myImageUrl, width: 128, height: 128,).image
+                                backgroundImage: (myImageUrl.toString().isEmpty)
+                                    ? Image.network('${AppConfig.profilePicturesUrl}avatar.png', width: 128, height: 128,  fit: BoxFit.cover,).image
+                                    : Image.network(myImageUrl, width: 128, height: 128,).image
                             ),
                             title: Text(
                               '${Provider.of<UserProvider>(context, listen: true).name}',
                               style: theme.textTheme.subtitle2!.copyWith(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600
                               ),
                             ),
                             subtitle: Text(
                               '${currentUserTweets[index]['created_at_string'].toString()}',
                               style: theme.textTheme.subtitle2!.copyWith(
-                                color: theme.hintColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600
+                                  color: theme.hintColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600
                               ),
                             ),
                           ),
@@ -247,10 +248,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             ),
                           ),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: (currentUserTweets[index]['image'] == null)
-                              ? Container()
-                              : Image.network(myImageUrl, width: 128, height: 128,)
+                              borderRadius: BorderRadius.circular(15),
+                              child: (currentUserTweets[index]['image'] == null)
+                                  ? Container()
+                                  : Image.network(myImageUrl, width: 128, height: 128,)
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
@@ -291,6 +292,45 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     ),
                                   ],
                                 ),
+                                GestureDetector(
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: ApplicationColors.grey,
+                                    size: 18.2,
+                                  ),
+                                  onTap: ()async{
+                                    print(currentUserTweets[index]['id']);
+                                    await Provider.of<TweetsProvider>(context, listen: false).updateTweet(currentUserTweets[index]['id'],currentUserTweets[index]['tweet']);
+
+                                    BotToast.showSimpleNotification(
+                                        title: 'Tweet updated successfully',
+                                        duration: Duration(seconds: 2));
+
+                                    await Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+
+                                  },
+                                ),
+
+
+
+                                GestureDetector(
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: ApplicationColors.grey,
+                                    size: 18.2,
+                                  ),
+                                  onTap: ()async{
+                                    print(currentUserTweets[index]['id']);
+                                    await Provider.of<TweetsProvider>(context, listen: false).deleteTweet(currentUserTweets[index]['id']);
+
+                                    BotToast.showSimpleNotification(
+                                        title: 'Tweet deleted successfully',
+                                        duration: Duration(seconds: 2));
+
+                                    await Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+                                  },
+                                ),
+
                               ],
                             ),
                           ),

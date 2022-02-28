@@ -5,8 +5,11 @@ class MyImageProvider extends ChangeNotifier{
 
   dynamic get myImage => _myImage;
 
+
   set myImage(dynamic value) {
     _myImage = value;
     notifyListeners();
   }
+
+
 }

@@ -7,9 +7,14 @@ import 'dart:convert' as convert;
 class TweetsProvider extends ChangeNotifier{
   final String subRoute = 'v1/users/tweets';
   final String subRoute2 = 'v1/tweets';
+  final String tweet_create='v1/tweets/store';
+  final String tweet_update='v1/tweets/update/';
+  final String tweet_delete='v1/tweets/delete/';
 
   var currentUserTweets = <dynamic>[];
   var followingUsersTweets = <dynamic>[];
+
+  bool showProgressBar = false;
 
   Future<dynamic> getCurrentUserTweets() async{
     currentUserTweets.clear();
@@ -54,6 +59,86 @@ class TweetsProvider extends ChangeNotifier{
     var jsonResponse = convert.jsonDecode(response.body);
     //print("the tweets of the following users: $jsonResponse");
     followingUsersTweets.addAll(jsonResponse);
+
+    notifyListeners();
+  }
+
+
+  Future<dynamic> createTweet(tweeta) async{
+    print("Tweeta");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getString('id');
+    var tweet = tweeta.text;//controller
+    var url = api.ApiUrl + this.tweet_create;
+    var token = prefs.getString('token');
+
+    var response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      body:{
+          'user_id': '$userId',
+          'tweet':'$tweet',
+      }
+    );
+
+   // var jsonResponse = convert.jsonDecode(response.body);
+
+    notifyListeners();
+  }
+
+
+
+  Future<dynamic> updateTweet(tweeta_id,tweeta) async{
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getString('id');
+    var tweetId=tweeta_id;//index from front end
+    var tweet =tweeta.text;//from front end
+    var url = api.ApiUrl + this.tweet_update+ '$tweetId';
+    var token = prefs.getString('token');
+    tweetId=tweetId.toString();
+
+
+    var response = await http.put(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+
+        body:{
+          'user_id': '$userId',
+          'tweet_id':'$tweetId',
+          'tweet':'$tweet',
+        }
+    );
+  //  var jsonResponse = convert.jsonDecode(response.body);
+
+    notifyListeners();
+  }
+
+  Future<dynamic> deleteTweet(dynamic tweeta_id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var tweetId=tweeta_id; //index from front end
+    var url = api.ApiUrl + this.tweet_delete + '$tweetId';
+    print(url);
+    var token = prefs.getString('token');
+    tweetId=tweetId.toString();
+
+    var response = await http.delete(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          'tweet_id': '$tweetId',
+        }
+    );
+   //var jsonResponse = convert.jsonDecode(response.body);
 
     notifyListeners();
   }

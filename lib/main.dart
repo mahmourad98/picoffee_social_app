@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:picoffee/providers/CommentProvider.dart';
 import 'package:picoffee/providers/ImageProvider.dart';
 import 'package:picoffee/providers/PofileProvider.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_)=>TweetsProvider()),
         ChangeNotifierProvider(create: (_)=>MyImageProvider()),
         ChangeNotifierProvider(create: (_)=>ProfileProvider()),
+        ChangeNotifierProvider(create: (_)=>CommentProvider()),
       ],
       child: MaterialApp(
         builder: BotToastInit(),

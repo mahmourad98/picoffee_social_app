@@ -3,6 +3,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:picoffee/app_config/app_config.dart';
+import 'package:picoffee/comments/comments.dart';
+import 'package:picoffee/providers/CommentProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -277,10 +279,19 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 ),
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.chat_bubble_outline,
-                                      color: ApplicationColors.grey,
-                                      size: 18.2,
+                                    GestureDetector(
+                                      child: Icon(
+                                        Icons.chat_bubble_outline,
+                                        color: ApplicationColors.grey,
+                                        size: 18.2,
+                                      ),
+                                      onTap: (){
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) => CommentScreen(currentUserTweets[index])
+                                          ),
+                                        );
+                                      },
                                     ),
                                     SizedBox(width: 8.5),
                                     Text(
@@ -307,12 +318,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         duration: Duration(seconds: 2));
 
                                     await Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
-
                                   },
                                 ),
-
-
-
                                 GestureDetector(
                                   child: Icon(
                                     Icons.delete,

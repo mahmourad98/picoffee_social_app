@@ -1,16 +1,15 @@
 import 'package:animation_wrappers/animation_wrappers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:picoffee/providers/CommentProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/providers/TopTweetProvider.dart';
 
 class CommentScreen extends StatefulWidget {
   List comm = [];
-  int indexuserTweet;
-
-  CommentScreen({required this.comm, required this.indexuserTweet});
+  var currentUserTweet;
+  CommentScreen(this.currentUserTweet);
 
   @override
   _CommentScreenState createState() => _CommentScreenState();
@@ -19,13 +18,20 @@ class CommentScreen extends StatefulWidget {
 class Comments {
   String image;
   String name;
-
   Comments(this.image, this.name);
 }
 
 class _CommentScreenState extends State<CommentScreen> {
+  late var comments;
+  TextEditingController commentText =TextEditingController();
+  void initState(){
+    super.initState();
+    this.comments = Provider.of<CommentProvider>(context,listen:false).getComments(widget.currentUserTweet['id']);
+  }
+
   @override
   Widget build(BuildContext context) {
+    this.comments = Provider.of<CommentProvider>(context,listen:true).comments;
     List<Comments> _comments = [
       Comments('assets/images/Layer707.png', 'Emili Williamson'),
       Comments('assets/images/Layer709.png', 'Harshu Makkar'),
@@ -115,11 +121,11 @@ class _CommentScreenState extends State<CommentScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '  ${Provider.of<TopTweets>(context, listen: true).topTweets[widget.indexuserTweet]['user']['name']}',
+                                                widget.currentUserTweet['user']['name'],
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               Text(
-                                                '  ${Provider.of<TopTweets>(context, listen: true).topTweets[widget.indexuserTweet]['created_at_string']}',
+                                                widget.currentUserTweet['created_at_string'],
                                                 style: theme
                                                     .textTheme.bodyText1!
                                                     .copyWith(
@@ -142,7 +148,7 @@ class _CommentScreenState extends State<CommentScreen> {
                             // height: constraints.maxHeight * 0.7,
                             // color: Colors.white,
                             child: ListView.builder(
-                              itemCount: widget.comm.length,
+                              itemCount: this.comments.length,
                               itemBuilder: (context, index) {
                                 return Container(
                                   color: Colors.white,
@@ -158,13 +164,13 @@ class _CommentScreenState extends State<CommentScreen> {
                                         children: [
                                           TextSpan(
                                             text:
-                                                '${widget.comm[index]['user']['name']}',
+                                                 '${widget.currentUserTweet['user']['name']}',
                                             style: theme.textTheme.headline6!
                                                 .copyWith(fontSize: 14),
                                           ),
                                           TextSpan(
-                                              text: '   ' +
-                                                  '${widget.comm[index]['created_at_string']}',
+                                              // text: '   ' +
+                                              //     '${widget.comm[index]['created_at_string']}',
                                               style: TextStyle(
                                                   fontSize: 10,
                                                   color: Colors.grey)),
@@ -172,7 +178,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      '${widget.comm[index]['body']}',
+                                      '${comments[index]['body'].toString()}',
                                       style:
                                           theme.textTheme.subtitle2!.copyWith(
                                         fontSize: 12,
@@ -212,8 +218,20 @@ class _CommentScreenState extends State<CommentScreen> {
                           hintText: 'Write your comment',
                           hintStyle: TextStyle(fontSize: 14),
                         ),
+                        controller: commentText,
                       ),
-                      trailing: Icon(Icons.send, color: theme.primaryColor),
+                      trailing: GestureDetector(child: Icon(Icons.send, color: theme.primaryColor),
+                        onTap: ()async{
+                          // print(widget.currentUserTweet['id']);
+                          // print(commentText.text);
+                          await Provider.of<CommentProvider>(context,listen: false).createComment(widget.currentUserTweet['id'], commentText.text);
+                          print('done with the first');
+                          await Provider.of<CommentProvider>(context,listen: false).getComments(widget.currentUserTweet['id']);
+                          print(Provider.of<CommentProvider>(context,listen: false).comments);
+                          print(Provider.of<CommentProvider>(context,listen: false).comments.length);
+                          commentText.clear();
+                        },
+                      ),
                     ),
                   ),
                 ],

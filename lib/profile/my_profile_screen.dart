@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:picoffee/app_config/app_config.dart';
 import 'package:picoffee/comments/comments.dart';
 import 'package:picoffee/providers/CommentProvider.dart';
+import 'package:picoffee/providers/LikeProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
@@ -18,13 +19,19 @@ import 'package:picoffee/providers/UserProvider.dart';
 
 
 class MyProfileScreen extends StatefulWidget {
+
   @override
   _MyProfileScreenState createState() => _MyProfileScreenState();
+
 }
+
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
   late var myImageUrl;
   late var currentUserTweets;
+  var liked;
+  late var likedbtn = false;
+  late var likeCount;
 
   void initState() {
     super.initState();
@@ -33,6 +40,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     myImageUrl = Provider.of<UserProvider>(context, listen: false).imageUrl;
     //print("getting tweets");
     Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
+
   }
 
   @override
@@ -40,6 +48,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     var myUser = Provider.of<UserProvider>(context, listen: true);
     this.myImageUrl = Provider.of<UserProvider>(context, listen: true).imageUrl;
     this.currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
+    this.liked = Provider.of<LikeProvider>(context, listen: true).liked;
+    this.likeCount = Provider.of<LikeProvider>(context, listen: true).likeCount;
 
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
@@ -262,14 +272,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.favorite_border,
-                                      color: ApplicationColors.grey,
-                                      size: 18.2,
+                                    GestureDetector(
+                                      onTap:() async{
+                                         await Provider.of<LikeProvider>(context, listen:false).likeTweet(currentUserTweets[index]['id']);
+
+                                      },
+                                      child:
+                                      Icon(
+                                        Icons.favorite,
+                                        color: ApplicationColors.primaryColor,
+                                        size: 18.2,
+                                      ),
+                                          // Icon(
+                                          //   Icons.favorite_border,
+                                          //   color: ApplicationColors.grey,
+                                          //   size: 18.2,
+                                          // ),
                                     ),
                                     SizedBox(width: 8.5),
                                     Text(
-                                      '${currentUserTweets[index]['comments'].length}',
+                                      '${currentUserTweets[index]['likes_count']}',
                                       style: TextStyle(
                                           color: ApplicationColors.grey,
                                           letterSpacing: 1,

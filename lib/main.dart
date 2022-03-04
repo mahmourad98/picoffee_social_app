@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:picoffee/providers/CommentProvider.dart';
 import 'package:picoffee/providers/ImageProvider.dart';
+import 'package:picoffee/providers/LikeProvider.dart';
 import 'package:picoffee/providers/PofileProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_)=>MyImageProvider()),
         ChangeNotifierProvider(create: (_)=>ProfileProvider()),
         ChangeNotifierProvider(create: (_)=>CommentProvider()),
+        ChangeNotifierProvider(create: (_)=>LikeProvider()),
       ],
       child: MaterialApp(
         builder: BotToastInit(),

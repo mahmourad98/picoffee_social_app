@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:picoffee/components/service.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,7 @@ class TweetsProvider extends ChangeNotifier{
   final String tweet_create='v1/tweets/store';
   final String tweet_update='v1/tweets/update/';
   final String tweet_delete='v1/tweets/delete/';
-
+  var imageUrl;
   var currentUserTweets = <dynamic>[];
   var followingUsersTweets = <dynamic>[];
 
@@ -64,26 +65,36 @@ class TweetsProvider extends ChangeNotifier{
   }
 
 
-  Future<dynamic> createTweet(tweeta) async{
+  Future<dynamic> createTweet(tweeta,pic) async{
     print("Tweeta");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getString('id');
     var tweet = tweeta.text;//controller
     var url = api.ApiUrl + this.tweet_create;
     var token = prefs.getString('token');
+    var img = pic;//controller
 
-    var response = await http.post(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      body:{
-          'user_id': '$userId',
-          'tweet':'$tweet',
-      }
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+    if(img != null) {
+      var multipartAvatar = await http.MultipartFile.fromPath("image", img.path);
+      request.files.add(multipartAvatar);
+    }
+
+    request.fields.addAll(
+        {
+          'user_id': userId.toString(),
+          'tweet': tweet.toString(),
+
+        }
     );
+    request.headers['Authorization'] = "Bearer ${token.toString()}";
 
+    StreamedResponse response = await request.send();
+    //(response.statusCode == 200) ? print("profile was updated") : print("profile was not updated");
+    var responseData = await response.stream.toBytes();
+    var responseString = String.fromCharCodes(responseData);
+    print(responseString);
    // var jsonResponse = convert.jsonDecode(response.body);
 
     notifyListeners();

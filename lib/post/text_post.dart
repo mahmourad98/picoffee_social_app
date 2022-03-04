@@ -1,7 +1,10 @@
+
+//import 'dart:html';
+import 'dart:io';
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:picoffee/app_theme/application_colors.dart';
 import 'package:picoffee/home/home.dart';
 import 'package:picoffee/providers/ImageProvider.dart';
@@ -15,11 +18,12 @@ class TextPostScreen extends StatefulWidget {
 }
 
 class _TextPostScreenState extends State<TextPostScreen> {
-
+ var _post_pic ;
+ late var image;
   void initState() {
 
-    Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController.text);
-
+    Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController,_post_pic);
+    image = Provider.of<TweetsProvider>(context, listen: false).imageUrl;
     super.initState();
   }
 
@@ -30,10 +34,7 @@ class _TextPostScreenState extends State<TextPostScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-
-
-
-
+    _post_pic = Provider.of<MyImageProvider>(context, listen: true).myImage;
 
     final myAppbar = AppBar(
       backgroundColor: ApplicationColors.white,
@@ -86,11 +87,13 @@ class _TextPostScreenState extends State<TextPostScreen> {
               Spacer(),
               Expanded(
                 flex: 20,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: FadedScaleAnimation(
-                      Image.asset('assets/images/Layer884.png')),
+                child:ClipRRect (
+                  //borderRadius: BorderRadius.circular(10),
+                  child:  (_post_pic == null)
+                   ? FadedScaleAnimation(Image.asset('assets/images/Layer884.png'))
+                    : FadedScaleAnimation(Image.file(_post_pic))
                 ),
+
               ),
               Spacer(),
               Row(
@@ -102,9 +105,14 @@ class _TextPostScreenState extends State<TextPostScreen> {
                     ),
                     padding: EdgeInsets.all(10),
                     margin: EdgeInsets.fromLTRB(5, 0, 10, 5),
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: theme.primaryColor,
+                    child: GestureDetector(
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: theme.primaryColor,
+                      ),
+                      onTap:() {
+                       getImage();
+                      },
                     ),
                   ),
                   Container(
@@ -120,7 +128,12 @@ class _TextPostScreenState extends State<TextPostScreen> {
                         color: theme.primaryColor,
                       ),
                       onTap: () async{
-
+                          await getImage().then((value) {
+                          Provider.of<MyImageProvider>(context, listen: false).myImage = value;
+                        print("value $value");
+                          }
+                          );
+                       //   _post_pic =Provider.of<MyImageProvider>(context, listen: false).myImage ;
                       },
                     ),
                   ),
@@ -135,7 +148,11 @@ class _TextPostScreenState extends State<TextPostScreen> {
                         duration: Duration(seconds: 3));
                   }
                   else{
-                      await Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController);
+                      await Provider.of<TweetsProvider>(context, listen: false).createTweet(tweetTextController,_post_pic).then(
+                              (_) {
+                          //  Provider.of<MyImageProvider>(context, listen: false).myImage = null;
+                          }
+                      );
 
                       BotToast.showSimpleNotification(
                           title: 'Tweet posted successfully',
@@ -169,3 +186,16 @@ class _TextPostScreenState extends State<TextPostScreen> {
     );
   }
 }
+
+Future<dynamic>  getImage() async{
+  final ImagePicker _picker = ImagePicker();
+  var image_pick = await _picker.pickImage(source: ImageSource.gallery);
+
+  if(image_pick == null) {
+    return null;
+  }
+  else{
+    final image = File(image_pick.path);
+    return image;
+  }}
+

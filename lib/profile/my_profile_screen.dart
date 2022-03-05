@@ -274,20 +274,22 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   children: [
                                     GestureDetector(
                                       onTap:() async{
-                                         await Provider.of<LikeProvider>(context, listen:false).likeTweet(currentUserTweets[index]['id']);
+                                         // await Provider.of<LikeProvider>(context, listen:false).likeTweet(currentUserTweets[index]['id']);
 
                                       },
                                       child:
-                                      Icon(
-                                        Icons.favorite,
-                                        color: ApplicationColors.primaryColor,
-                                        size: 18.2,
-                                      ),
-                                          // Icon(
-                                          //   Icons.favorite_border,
-                                          //   color: ApplicationColors.grey,
-                                          //   size: 18.2,
-                                          // ),
+                                      // Icon(
+                                      //   Icons.favorite,
+                                      //   color: (currentUserTweets[index]['likes_count'] == 0) ? ApplicationColors.primaryColor :
+                                      //   ApplicationColors.grey
+                                      //   ,
+                                      //   size: 18.2,
+                                      // ),
+                                          Icon(
+                                            Icons.favorite_border,
+                                            color: ApplicationColors.grey,
+                                            size: 18.2,
+                                          ),
                                     ),
                                     SizedBox(width: 8.5),
                                     Text(
@@ -324,23 +326,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                           fontSize: 11.7),
                                     ),
                                   ],
-                                ),
-                                GestureDetector(
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: ApplicationColors.grey,
-                                    size: 18.2,
-                                  ),
-                                  onTap: ()async{
-                                    print(currentUserTweets[index]['id']);
-                                    await Provider.of<TweetsProvider>(context, listen: false).updateTweet(currentUserTweets[index]['id'],currentUserTweets[index]['tweet']);
-
-                                    BotToast.showSimpleNotification(
-                                        title: 'Tweet updated successfully',
-                                        duration: Duration(seconds: 2));
-
-                                    await Provider.of<TweetsProvider>(context, listen: false).getCurrentUserTweets();
-                                  },
                                 ),
                                 GestureDetector(
                                   child: Icon(

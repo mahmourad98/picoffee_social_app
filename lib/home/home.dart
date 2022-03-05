@@ -38,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late var myImageUrl;
   late var loggedIn;
 
+  late var currentUserTweets;
+
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<BottomNavigationBarItem> _bottomBarItems = [
@@ -103,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
     this.myName = Provider.of<UserProvider>(context, listen: true).name;
     this.loggedIn = Provider.of<UserProvider>(context, listen: true).logged_in;
     var myFollowingUsersTweets = Provider.of<TweetsProvider>(context, listen: true).followingUsersTweets;
+    this.currentUserTweets = Provider.of<TweetsProvider>(context, listen: true).currentUserTweets;
 
     final mediaQuery = MediaQuery.of(context);
     final theme = Theme.of(context);
@@ -447,18 +450,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   Row(
                                     children: [
-                                      Icon(
-                                        Icons.chat_bubble_outline,
-                                        color: ApplicationColors.grey,
-                                        size: 18,
+                                      GestureDetector(
+                                        child: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: ApplicationColors.grey,
+                                          size: 18.2,
+                                        ),
+                                        onTap: (){
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) => CommentScreen(currentUserTweets[index])
+                                            ),
+                                          );
+                                        },
                                       ),
                                       SizedBox(width: 8.5),
                                       Text(
-                                        '${myFollowingUsersTweets[index]['comments'].length}',
+                                        '${currentUserTweets[index]['comments'].length}',
                                         style: TextStyle(
                                             color: ApplicationColors.grey,
-                                            fontSize: 12,
-                                            letterSpacing: 0.5),
+                                            letterSpacing: 0.5,
+                                            fontSize: 11.7),
                                       ),
                                     ],
                                   ),
